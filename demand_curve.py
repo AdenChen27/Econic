@@ -57,6 +57,7 @@ class BudgetConstraint:
         b = budget/py
         self.k, self.b = k, b
         self.f = lambda x: x*k + b
+        self.x_range = [0, min(self.budget/self.px, AX_WIDTH)]
 
         # indifference curve
         self.u = b/(2*np.sqrt(-k))
@@ -82,8 +83,7 @@ class BudgetConstraint:
         return plane.c2p(*self.get_coords(x, y))
 
     def get_graph(self, plane):
-        bc_x_range = [0, min(self.budget/self.px, AX_WIDTH)]
-        return plane.plot(self.f, x_range=bc_x_range, use_smoothing=False)
+        return plane.plot(self.f, x_range=self.x_range, use_smoothing=False)
 
     def get_ic(self, plane):
         return IndifferenceCurve(self.u)
@@ -113,7 +113,7 @@ class BudgetConstraintIntro(Scene):
         labels = plane.get_axis_labels(x_label="Q_x", y_label="Q_y")
         self.add(plane, labels)
 
-        bc = BudgetConstraint(PX, PY, BUDGET)
+        bc = BudgetConstraint(PX, PY, BUDGET)    
 
         p_tracker = ValueTracker(PX)
 
@@ -122,12 +122,30 @@ class BudgetConstraintIntro(Scene):
             lambda l: l.become(BudgetConstraint(p_tracker.get_value(), PY, BUDGET).get_graph(plane))
         )
 
-        # a dot on the budget constraint line with Qy = 1
+        # Animation #1
+        dot = Dot(bc_graph.get_start()).add_updater(
+            lambda d: d.move_to(bc.get_pos(plane, x=x_tracker.get_value()))
+        )
+
+        self.add(bc_graph, dot)
+
+        x_tracker = ValueTracker(0)
+        x_values = (bc.x_range[1], bc.get_coords(y=2)[0])
+        for x in x_values:
+            self.play(
+                x_tracker.animate.set_value(x), 
+                run_time=2
+            )
+        self.wait()
+
+        # Animation #2
+        # a dot on the budget constraint line with Qy = 2
         init_dot_pos = bc.get_pos(plane, y=2)
-        dot = Dot(point=init_dot_pos)
+        dot.clear_updaters()
         dot.add_updater(lambda d: d.move_to(
             BudgetConstraint(p_tracker.get_value(), PY, BUDGET).get_pos(plane, y=2)
         ))
+
         # line from dot to y axis (Q_y)
         dot_to_y_ax_line = plane.get_lines_to_point(init_dot_pos)[0].set_color(YELLOW)
         dot_to_y_ax_line.add_updater(lambda l: l.put_start_and_end_on(
@@ -153,9 +171,8 @@ class BudgetConstraintIntro(Scene):
         Group(p_var, p_arrow).arrange(RIGHT).shift(UR*2 + RIGHT*.5)
         Group(q_var, q_arrow).arrange(RIGHT).next_to(Group(p_var, p_arrow), DOWN)
         
-        self.add(bc_graph)
-        self.add(p_var, p_arrow, q_var, q_arrow)
-        self.add(dot, dot_to_y_ax_line)
+        self.play(FadeIn(p_var), FadeIn(p_arrow), FadeIn(q_var), FadeIn(q_arrow))
+        self.add(dot_to_y_ax_line)
 
         # animation
         p_values = (10, BUDGET/AX_WIDTH, 2)
@@ -296,7 +313,7 @@ class DerivingDemandCurve(Scene):
             BudgetConstraint(p_tracker.get_value(), PY, BUDGET).tan_pos[0]
         ))
 
-        self.play(Create(bc_graphs), Create(p_var), Create(q_var))
+        self.play(FadeIn(bc_graphs), FadeIn(p_var), FadeIn(q_var))
 
         # demand curve on the Q-P plane 
         self.last_dot_pos = (bc.tan_pos[0], bc.px)
@@ -323,7 +340,7 @@ class DerivingDemandCurve(Scene):
         self.add(demand_dot, demand_curve)
 
         # animation: BC and IC moves as Px moves
-        px_values = (9, BUDGET/AX_WIDTH/2)
+        px_values = (9, BUDGET/AX_WIDTH/2, PX)
         for px in px_values:
             self.play(
                 p_tracker.animate.set_value(px), 
