@@ -180,8 +180,8 @@ class IndifferenceCurveIntro(Scene):
     """
     Indifference Curve Introduction
     
-    dot moving along the indifference curve
-
+    # Animation #1: dot moving along a fixed indifference curve
+    # Animation #2: dot moving with a movning indifference curve
     """
     def construct(self):
         # Qx-Qy plane
@@ -189,32 +189,66 @@ class IndifferenceCurveIntro(Scene):
         labels = plane.get_axis_labels(x_label="Q_x", y_label="Q_y")
 
         # indifference curve
-        ic = BudgetConstraint(PX, PY, BUDGET).get_ic(plane)
+        ic = IndifferenceCurve(3)
         ic_graph = ic.get_graph(plane)
 
+        # Animation #1: dot moving along a fixed indifference curve
         # dot moving along indifference curve
         dot = Dot(ic_graph.get_start()).add_updater(
-            lambda d: d.move_to(ic.get_pos(plane, x=tracker.get_value()))
+            lambda d: d.move_to(ic.get_pos(plane, x=x_tracker.get_value()))
         )
 
-        p_var = Variable(bc.px, "P_x", num_decimal_places=3)
-        q_var = Variable(bc.tan_pos[0], 'Q_x', num_decimal_places=3)
+        # Variables showing quantities of goods x and y, and utility
+        dot_coords = (ic.x_range[0], ic.f(ic.x_range[0]))
+        u_var = Variable(ic.u, 'U', num_decimal_places=3)
+        qx_var = Variable(dot_coords[0], "Q_x", num_decimal_places=3)
+        qy_var = Variable(dot_coords[1], 'Q_y', num_decimal_places=3)
 
-        Group(p_var, q_var).arrange(DOWN).shift(LEFT + UP*2.5)
-        p_var.add_updater(lambda v: v.tracker.set_value(p_tracker.get_value()))
-        q_var.add_updater(lambda v: v.tracker.set_value(
-            BudgetConstraint(p_tracker.get_value(), PY, BUDGET).tan_pos[0]
+        Group(u_var, qx_var, qy_var).arrange(DOWN).shift(UR*2 + RIGHT*.5)
+        qx_var.add_updater(lambda v: v.tracker.set_value(x_tracker.get_value()))
+        qy_var.add_updater(lambda v: v.tracker.set_value(
+            ic.f(x_tracker.get_value())
         ))
 
         self.add(plane, labels)
         self.add(ic_graph, dot)
+        self.add(u_var, qx_var, qy_var)
 
-        # animation #1 (dot moving along a fixed indifference curve)
-        x_tracker = ValueTracker(ic.x_range[0])
+        x_tracker = ValueTracker(dot_coords[0])
         x_values = (ic.x_range[1], ic.u)
         for x in x_values:
             self.play(
-                tracker.animate.set_value(x), 
+                x_tracker.animate.set_value(x), 
+                run_time=2
+            )
+        self.wait()
+
+
+        # Animation #2: dot moving with a movning indifference curve
+        # clear updaters for Animation #1
+        [m.clear_updaters() for m in (dot, qx_var, qy_var, ic_graph)]
+
+        self.play(
+            FadeOut(qx_var), FadeOut(qy_var), u_var.animate().shift(DOWN * 1.5)
+        )
+
+        dot.add_updater(
+            lambda d: d.move_to(plane.c2p(u_tracker.get_value(), u_tracker.get_value()))
+        )
+
+        ic_graph.add_updater(
+            lambda l: l.become(IndifferenceCurve(u_tracker.get_value()).get_graph(plane))
+        )
+
+        u_var.add_updater(
+            lambda v: v.tracker.set_value(u_tracker.get_value()**2)
+        )
+        
+        u_tracker = ValueTracker(ic.u)
+        u_values = [7, 1, 3]
+        for u in u_values:
+            self.play(
+                u_tracker.animate.set_value(u), 
                 run_time=2
             )
         self.wait()
