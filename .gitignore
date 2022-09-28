@@ -1,4 +1,5 @@
 .DS_Store
+.gitignore
 /__pycache__
 /manimlib
 /media
