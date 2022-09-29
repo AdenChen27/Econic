@@ -24,9 +24,9 @@ class IndifferenceCurve:
         self.f = lambda x: u**2/x
         self.x_range = [self.u**2/AX_HEIGHT, AX_WIDTH]
 
-    def get_graph(self, plane):
-        return plane.plot(self.f, x_range=self.x_range, use_smoothing=False)
-        # return plane.plot(self.f, x_range=x_range, use_smoothing=False, color=BLUE)
+    def get_graph(self, plane, **config):
+        return plane.plot(self.f, x_range=self.x_range, use_smoothing=False, **config)
+        # return plane.plot(self.f, x_range=self.x_range, use_smoothing=False, **config)
 
     def get_coords(self, x=None, y=None):
         # return coordinates of a dot on the budget constraint line
@@ -57,7 +57,7 @@ class BudgetConstraint:
         b = budget/py
         self.k, self.b = k, b
         self.f = lambda x: x*k + b
-        self.x_range = [0, min(self.budget/self.px, AX_WIDTH)]
+        self.x_range = [max((AX_HEIGHT - b)/k, 0), min(self.budget/self.px, AX_WIDTH)]
 
         # indifference curve
         self.u = b/(2*np.sqrt(-k))
@@ -89,7 +89,7 @@ class BudgetConstraint:
         return IndifferenceCurve(self.u)
 
     def get_ic_graph(self, plane):
-        return self.get_ic(plane).get_graph(plane)
+        return self.get_ic(plane).get_graph(plane, color=BLUE)
 
     def get_all_graphs(self, plane):
         bc_graph = self.get_graph(plane)
@@ -113,7 +113,7 @@ class BudgetConstraintIntro(Scene):
         labels = plane.get_axis_labels(x_label="Q_x", y_label="Q_y")
         self.add(plane, labels)
 
-        bc = BudgetConstraint(PX, PY, BUDGET)    
+        bc = BudgetConstraint(PX, PY, BUDGET)
 
         p_tracker = ValueTracker(PX)
 
@@ -130,7 +130,8 @@ class BudgetConstraintIntro(Scene):
         self.add(bc_graph, dot)
 
         x_tracker = ValueTracker(0)
-        x_values = (bc.x_range[1], bc.get_coords(y=2)[0])
+        # x_values = (bc.x_range[1], bc.get_coords(y=2)[0])
+        x_values = (bc.x_range[1], bc.x_range[1]/2)
         for x in x_values:
             self.play(
                 x_tracker.animate.set_value(x), 
@@ -174,7 +175,6 @@ class BudgetConstraintIntro(Scene):
         self.play(FadeIn(p_var), FadeIn(p_arrow), FadeIn(q_var), FadeIn(q_arrow))
         self.add(dot_to_y_ax_line)
 
-        # animation
         p_values = (10, BUDGET/AX_WIDTH, 2)
         for p in p_values:
             # update p_arrow direction
