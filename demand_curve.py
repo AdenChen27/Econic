@@ -291,11 +291,13 @@ class IndifferenceCurveIntro2(Scene):
         label_d2 = Text("B").scale(.5).next_to(dot2, UR/2)
         label_d3 = Text("C").scale(.5).next_to(dot3, UR/2)
 
+        # arrows depecting how Qx, Qy changed as one move from bundle dot1 to dot2
         line_x1 = Arrow(ic.get_pos(plane, x=1), plane.c2p(3, 9), buff=0).set_color(GREEN)
         line_y1 = Arrow(plane.c2p(3, 9), ic.get_pos(plane, x=3), buff=0).set_color(RED)
         label_x1 = Text("+2X").scale(.5).next_to(line_x1, DOWN).set_color(GREEN)
         label_y1 = Text("-6Y").scale(.5).next_to(line_y1, RIGHT).set_color(RED)
 
+        # arrows depecting how Qx, Qy changed as one move from bundle dot2 to dot3
         line_x2 = Arrow(ic.get_pos(plane, x=3), plane.c2p(9, 3), buff=0).set_color(GREEN)
         line_y2 = Arrow(plane.c2p(9, 3), ic.get_pos(plane, y=1), buff=0).set_color(RED)
         label_x2 = Text("+6X").scale(.5).next_to(line_x2, UP).set_color(GREEN)
@@ -308,14 +310,20 @@ class IndifferenceCurveIntro2(Scene):
         explanation_1 = MathTex(r"A \rightarrow B: X=2Y").scale(.75).shift(UR*2 + RIGHT*.5)
         explanation_2 = MathTex(r"B \rightarrow C: X= \frac{1} {3} Y").scale(.75).next_to(explanation_1, DOWN)
 
-        self.play(*(FadeIn(e) for e in (dot1, dot2, dot3, label_d1, label_d2, label_d3)))
+        # self.play(*(FadeIn(e) for e in (dot1, dot2, dot3, label_d1, label_d2, label_d3)))
+        # self.play(*(FadeIn(e) for e in (line_x1, line_y1, label_x1, label_y1)))
+        # self.play(FadeIn(_explanation_1))
+        self.add(
+            dot1, dot2, dot3, label_d1, label_d2, label_d3, 
+            line_x1, line_y1, label_x1, label_y1, 
+            line_x2, line_y2, label_x2, label_y2, 
+            _explanation_1, _explanation_2
+        )
 
-        self.play(*(FadeIn(e) for e in (line_x1, line_y1, label_x1, label_y1)))
-        self.play(FadeIn(_explanation_1))
         self.play(Transform(_explanation_1, explanation_1))
         self.wait()
 
-        self.play(*(FadeIn(e) for e in (line_x2, line_y2, label_x2, label_y2)))
+        # self.play(*(FadeIn(e) for e in (line_x2, line_y2, label_x2, label_y2)))
         self.play(FadeIn(_explanation_2))
         self.wait()
         
@@ -346,31 +354,85 @@ class IndifferenceCurveIntro3(Scene):
         ic_graph = ic.get_graph(plane)
         self.add(ic_graph)
 
-        dot = Dot(ic_graph.get_start()).add_updater(
+        dot1 = Dot(ic.get_pos(plane, x=ic.x_range[0])).add_updater(
             lambda d: d.move_to(ic.get_pos(plane, x=x_tracker.get_value()))
         )
 
-        # Variables showing quantities of goods x and y, and utility
-        dot_coords = (ic.x_range[0], ic.f(ic.x_range[0]))
-        u_var = Variable(ic.u, 'U', num_decimal_places=3)
-        qx_var = Variable(dot_coords[0], "Q_x", num_decimal_places=3)
-        qy_var = Variable(dot_coords[1], 'Q_y', num_decimal_places=3)
+        dot2 = Dot(ic.get_pos(plane, x=ic.x_range[0] + 1)).add_updater(
+            lambda d: d.move_to(ic.get_pos(plane, x=x_tracker.get_value() + 1))
+        )
 
-        Group(u_var, qx_var, qy_var).arrange(DOWN).shift(UR*2 + RIGHT*.5)
-        qx_var.add_updater(lambda v: v.tracker.set_value(x_tracker.get_value()))
-        qy_var.add_updater(lambda v: v.tracker.set_value(
-            ic.f(x_tracker.get_value())
+        # dashed line showing the Qx difference between bundle dot1 and dot2 doesn't change
+        line_x = DashedLine(
+            ic.get_pos(plane, x=ic.x_range[0]), 
+            plane.c2p(ic.x_range[0] + 1, ic.f(ic.x_range[0]))
+        ).add_updater(lambda l:l.become(
+            DashedLine(
+                ic.get_pos(plane, x=x_tracker.get_value()), 
+                plane.c2p(x_tracker.get_value() + 1, ic.f(x_tracker.get_value()))
+            )
         ))
 
-        self.add(dot)
-        self.add(u_var, qx_var, qy_var)
+        label_x = MathTex(r"\Delta Q_x=1").scale(.5).next_to(line_x, UP).add_updater(
+            lambda l: l.next_to(line_x, UP)
+        )
 
-        x_tracker = ValueTracker(dot_coords[0])
-        x_values = (ic.x_range[1], ic.u)
+        # line showing the Qy difference between bundle dot1 and dot2
+        line_y = DashedLine(
+            plane.c2p(ic.x_range[0] + 1, ic.f(ic.x_range[0])), 
+            ic.get_pos(plane, x=ic.x_range[0] + 1)
+        ).add_updater(lambda l:l.become(
+            DashedLine(
+                plane.c2p(x_tracker.get_value() + 1, ic.f(x_tracker.get_value())), 
+                ic.get_pos(plane, x=x_tracker.get_value() + 1), 
+            )
+        ))
+
+        label_y = MathTex(r"\Delta Q_y").scale(.5).next_to(line_x, UP).add_updater(
+            lambda l: l.next_to(line_y, RIGHT)
+        )
+
+        # variable showing delta Qy
+        init_delta_qy = ic.f(ic.x_range[0]) - ic.f(ic.x_range[0] + 1)
+        var_delta_qy = Variable(init_delta_qy, r"\Delta Q_y")
+
+        # showing how much of good y would one like to trade for a unit of good x
+        # explanation = MathTex(rf"X={init_delta_qy}Y").scale(.75).next_to(var_delta_qy, DOWN)
+        explanation = Variable(init_delta_qy, r"X")
+        exp_post = MathTex("Y").scale(.75)
+        Group(explanation, exp_post).arrange(RIGHT).next_to(var_delta_qy, DOWN)
+
+        var_delta_qy.add_updater(lambda v: v.tracker.set_value(
+            ic.f(x_tracker.get_value()) - ic.f(x_tracker.get_value() + 1)
+        )).shift(UR*2 + RIGHT*.5)
+
+        explanation.add_updater(lambda v: v.tracker.set_value(
+            ic.f(x_tracker.get_value()) - ic.f(x_tracker.get_value() + 1)
+        )).shift(UR*2 + RIGHT*.5)
+
+
+        # # Variables showing quantities of goods x and y, and utility
+        start_coords = (ic.x_range[0], ic.f(ic.x_range[0]))
+        # u_var = Variable(ic.u, 'U', num_decimal_places=3)
+        # qx_var = Variable(dot_coords[0], "Q_x", num_decimal_places=3)
+        # qy_var = Variable(dot_coords[1], 'Q_y', num_decimal_places=3)
+
+        # Group(u_var, qx_var, qy_var).arrange(DOWN).shift(UR*2 + RIGHT*.5)
+        # qx_var.add_updater(lambda v: v.tracker.set_value(x_tracker.get_value()))
+        # qy_var.add_updater(lambda v: v.tracker.set_value(
+        #     ic.f(x_tracker.get_value())
+        # ))
+
+        self.add(dot1, dot2)
+        self.add(line_x, label_x, line_y, label_y)
+        self.add(var_delta_qy, explanation, exp_post)
+
+        x_tracker = ValueTracker(start_coords[0])
+        x_values = (ic.x_range[1] - 1, ic.u)
         for x in x_values:
             self.play(
                 x_tracker.animate.set_value(x), 
-                run_time=2
+                run_time=4
             )
         self.wait()
 
