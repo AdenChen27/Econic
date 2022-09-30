@@ -310,25 +310,30 @@ class IndifferenceCurveIntro2(Scene):
         explanation_1 = MathTex(r"A \rightarrow B: X=2Y").scale(.75).shift(UR*2 + RIGHT*.5)
         explanation_2 = MathTex(r"B \rightarrow C: X= \frac{1} {3} Y").scale(.75).next_to(explanation_1, DOWN)
 
-        # self.play(*(FadeIn(e) for e in (dot1, dot2, dot3, label_d1, label_d2, label_d3)))
-        # self.play(*(FadeIn(e) for e in (line_x1, line_y1, label_x1, label_y1)))
-        # self.play(FadeIn(_explanation_1))
         self.add(
             dot1, dot2, dot3, label_d1, label_d2, label_d3, 
             line_x1, line_y1, label_x1, label_y1, 
             line_x2, line_y2, label_x2, label_y2, 
             _explanation_1, _explanation_2
         )
+        self.play(
+            Transform(_explanation_1, explanation_1), 
+            Transform(_explanation_2, explanation_2)
+        )
 
-        self.play(Transform(_explanation_1, explanation_1))
-        self.wait()
+        # self.play(*(FadeIn(e) for e in (dot1, dot2, dot3, label_d1, label_d2, label_d3)))
+        # self.play(*(FadeIn(e) for e in (line_x1, line_y1, label_x1, label_y1)))
+        # self.play(FadeIn(_explanation_1))
+
+        # self.play(Transform(_explanation_1, explanation_1))
+        # self.wait()
 
         # self.play(*(FadeIn(e) for e in (line_x2, line_y2, label_x2, label_y2)))
-        self.play(FadeIn(_explanation_2))
-        self.wait()
+        # self.play(FadeIn(_explanation_2))
+        # self.wait()
         
-        self.play(Transform(_explanation_2, explanation_2))
-        self.wait()
+        # self.play(Transform(_explanation_2, explanation_2))
+        # self.wait()
 
         # self.play(*(FadeOut(e) for e in (
         #     dot1, dot2, dot3, label_d1, label_d2, label_d3, 
@@ -343,7 +348,8 @@ class IndifferenceCurveIntro3(Scene):
     
     comparing how much of good Y would one trade 
     for a unit of good X on each point on the indifference curve
-    Animation #3: showing MRS for each point on the indifference curve
+
+    illustraiting diminishing utility of good x (as measured by how much y to which it's equivalent)
     """
     def construct(self):
         plane = Axes(**AX_CONFIG).shift(LEFT*2)
@@ -381,55 +387,58 @@ class IndifferenceCurveIntro3(Scene):
         line_y = DashedLine(
             plane.c2p(ic.x_range[0] + 1, ic.f(ic.x_range[0])), 
             ic.get_pos(plane, x=ic.x_range[0] + 1)
-        ).add_updater(lambda l:l.become(
+        ).set_color(YELLOW).add_updater(lambda l:l.become(
             DashedLine(
                 plane.c2p(x_tracker.get_value() + 1, ic.f(x_tracker.get_value())), 
                 ic.get_pos(plane, x=x_tracker.get_value() + 1), 
             )
         ))
 
-        label_y = MathTex(r"\Delta Q_y").scale(.5).next_to(line_x, UP).add_updater(
-            lambda l: l.next_to(line_y, RIGHT)
-        )
-
         # variable showing delta Qy
         init_delta_qy = ic.f(ic.x_range[0]) - ic.f(ic.x_range[0] + 1)
-        var_delta_qy = Variable(init_delta_qy, r"\Delta Q_y")
+        label_y = Variable(init_delta_qy, r"\Delta Q_y").set_color(YELLOW).scale(.5)
+        # follow `line_y`
+        label_y.add_updater(lambda l: l.next_to(line_y, RIGHT))
+        # update value
+        label_y.add_updater(lambda v: v.tracker.set_value(
+            ic.f(x_tracker.get_value()) - ic.f(x_tracker.get_value() + 1)
+        )).shift(UR*2 + RIGHT*.5)
+
 
         # showing how much of good y would one like to trade for a unit of good x
-        # explanation = MathTex(rf"X={init_delta_qy}Y").scale(.75).next_to(var_delta_qy, DOWN)
-        explanation = Variable(init_delta_qy, r"X")
-        exp_post = MathTex("Y").scale(.75)
-        Group(explanation, exp_post).arrange(RIGHT).next_to(var_delta_qy, DOWN)
 
-        var_delta_qy.add_updater(lambda v: v.tracker.set_value(
+        # dqy_var: "X=_Y"
+        dqy_var = Variable(init_delta_qy, r"X", num_decimal_places=3)
+        dqy_var.add_updater(lambda v: v.tracker.set_value(
             ic.f(x_tracker.get_value()) - ic.f(x_tracker.get_value() + 1)
-        )).shift(UR*2 + RIGHT*.5)
+        ))
+        dqy_var.add(MathTex("Y").next_to(dqy_var, RIGHT))
+        
+        qx_var = Variable(ic.f(ic.x_range[0]), "Q_x", num_decimal_places=3)
+        qx_var.add_updater(lambda v: v.tracker.set_value(x_tracker.get_value()))
+        
+        # arrows showing that as Qx increases, delta Qy decreases, and vice versa
+        dqy_arrow_is_up = True
+        dqy_arrow = Arrow(start=UP, end=ORIGIN)
+        qx_arrow = Arrow(start=ORIGIN, end=UP)
+        dqy_var.add(dqy_arrow.next_to(dqy_var, RIGHT).set_color(YELLOW))
+        qx_var.add(qx_arrow.next_to(qx_var, RIGHT))
 
-        explanation.add_updater(lambda v: v.tracker.set_value(
-            ic.f(x_tracker.get_value()) - ic.f(x_tracker.get_value() + 1)
-        )).shift(UR*2 + RIGHT*.5)
-
-
-        # # Variables showing quantities of goods x and y, and utility
-        start_coords = (ic.x_range[0], ic.f(ic.x_range[0]))
-        # u_var = Variable(ic.u, 'U', num_decimal_places=3)
-        # qx_var = Variable(dot_coords[0], "Q_x", num_decimal_places=3)
-        # qy_var = Variable(dot_coords[1], 'Q_y', num_decimal_places=3)
-
-        # Group(u_var, qx_var, qy_var).arrange(DOWN).shift(UR*2 + RIGHT*.5)
-        # qx_var.add_updater(lambda v: v.tracker.set_value(x_tracker.get_value()))
-        # qy_var.add_updater(lambda v: v.tracker.set_value(
-        #     ic.f(x_tracker.get_value())
-        # ))
-
+        Group(qx_var, dqy_var).arrange(DOWN).shift(UR*2 + RIGHT*.5)
         self.add(dot1, dot2)
         self.add(line_x, label_x, line_y, label_y)
-        self.add(var_delta_qy, explanation, exp_post)
+        self.add(qx_var, dqy_var)
 
-        x_tracker = ValueTracker(start_coords[0])
-        x_values = (ic.x_range[1] - 1, ic.u)
+        x_tracker = ValueTracker(ic.u)
+        x_values = (ic.x_range[1] - 1, ic.x_range[0], ic.u)
         for x in x_values:
+            # update arrow directions
+            if (x_tracker.get_value() < x) != dqy_arrow_is_up: 
+                dqy_arrow_is_up = ~dqy_arrow_is_up
+                self.play(
+                    Rotate(dqy_arrow, angle=PI), 
+                    Rotate(qx_arrow, angle=PI)
+                )
             self.play(
                 x_tracker.animate.set_value(x), 
                 run_time=4
@@ -437,6 +446,8 @@ class IndifferenceCurveIntro3(Scene):
         self.wait()
 
 
+
+# Animation #3: showing MRS for each point on the indifference curve
 
 
         # Animation #?: multiple indifference curves, color showing utility (darker = higher utility)
