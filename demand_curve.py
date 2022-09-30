@@ -198,17 +198,51 @@ class IndifferenceCurveIntro(Scene):
     Indifference Curve Introduction
     
     Animation #1: dot moving along a fixed indifference curve
-    Animation #2: dot moving with a movning indifference curve
+    Animation #2: dot moving with a moving indifference curve
+    Animation #3: comparing bundles on indifference curve, 
+      (Illustraiting diminishing utility of good x 
+        (as measured by how much y to which it's equivalent))
+    Animation #4: comparing how much of good Y would one trade 
+      for a unit of good X on each point on the indifference curve.
+      (Illustraiting diminishing utility of good x, like #3)
+    Animation #5: MRS changing with Qx
     """
     def construct(self):
-        plane = NumberPlane(**AX_CONFIG).shift(LEFT*2)
+        self.init()
+        # set of new mojects added/deleted to self -> 
+        #   set of all mojects added (exclude those imposed by self.init)
+
+        self.animation_1() # +{dot, u_var} -> {dot, u_var}
+        self.animation_2() # -{dot, u_var} -> {}
+        self.animation_3() # no change
+        self.animation_4() # no change
+        # self.animation_5() # no change
+
+    def init(self):
+        plane = Axes(**AX_CONFIG).shift(LEFT*2)
         labels = plane.get_axis_labels(x_label="Q_x", y_label="Q_y")
 
         # indifference curve
         ic = IndifferenceCurve(3)
         ic_graph = ic.get_graph(plane)
-        
         self.add(plane, labels, ic_graph)
+
+        self.plane, self.ic, self.ic_graph = plane, ic, ic_graph
+
+    def add_mojects(self, *args, animation=FadeIn, **kwargs):
+        if animation is None:
+            self.add(*args)
+        else:
+            self.play(*(animation(e) for e in args), **kwargs)
+
+    def remove_mojects(self, *args, animation=FadeOut, **kwargs):
+        self.play(*(animation(e) for e in args), **kwargs)
+        self.remove(*args)
+    
+    def animation_1(self):
+        # dot moving along a fixed indifference curve
+        # mojects change: +{dot, u_var} -> {dot, u_var}
+        plane, ic, ic_graph = self.plane, self.ic, self.ic_graph
 
         dot = Dot(ic_graph.get_start()).add_updater(
             lambda d: d.move_to(ic.get_pos(plane, x=x_tracker.get_value()))
@@ -226,8 +260,7 @@ class IndifferenceCurveIntro(Scene):
             ic.f(x_tracker.get_value())
         ))
 
-        self.add(dot)
-        self.add(u_var, qx_var, qy_var)
+        self.add(dot, u_var, qx_var, qy_var)
 
         x_tracker = ValueTracker(dot_coords[0])
         x_values = (ic.x_range[1], ic.u)
@@ -238,13 +271,18 @@ class IndifferenceCurveIntro(Scene):
             )
         self.wait()
 
-        # Animation #2: dot moving with a moving indifference curve
-        # clear updaters for Animation #1
+        # clean up
         [m.clear_updaters() for m in (dot, qx_var, qy_var, ic_graph)]
+        self.remove_mojects(qx_var, qy_var)
+        self.play(u_var.animate().shift(DOWN * 1.5))
 
-        self.play(
-            FadeOut(qx_var), FadeOut(qy_var), u_var.animate().shift(DOWN * 1.5)
-        )
+        self.dot, self.u_var = dot, u_var
+
+    def animation_2(self):
+        # dot moving with a moving indifference curve
+        # mojects change: -{dot, u_var} -> {}
+        plane, ic, ic_graph = self.plane, self.ic, self.ic_graph
+        dot, u_var = self.dot, self.u_var
 
         dot.add_updater(
             lambda d: d.move_to(plane.c2p(u_tracker.get_value(), u_tracker.get_value()))
@@ -266,24 +304,15 @@ class IndifferenceCurveIntro(Scene):
                 run_time=2
             )
         self.wait()
+        self.remove_mojects(dot, u_var)
 
+    def animation_3(self):
+        # comparing bundles on indifference curve, 
+        #   (Illustraiting diminishing utility of good x 
+        #     (as measured by how much y to which it's equivalent))
+        # mojects change: no change
+        plane, ic, ic_graph = self.plane, self.ic, self.ic_graph
 
-class IndifferenceCurveIntro2(Scene):
-    """
-    Indifference Curve Introduction 2
-    
-    comparing points on indifference curve, 
-    showing diminishing marginal utility for consumption of good x
-    """
-    def construct(self):
-        plane = Axes(**AX_CONFIG).shift(LEFT*2)
-        labels = plane.get_axis_labels(x_label="Q_x", y_label="Q_y")
-        self.add(plane, labels)
-
-        ic = IndifferenceCurve(3)
-        ic_graph = ic.get_graph(plane)
-        self.add(ic_graph)
-        
         dot1 = Dot(point=ic.get_pos(plane, x=1))
         dot2 = Dot(point=ic.get_pos(plane, x=3))
         dot3 = Dot(point=ic.get_pos(plane, y=1))
@@ -310,55 +339,44 @@ class IndifferenceCurveIntro2(Scene):
         explanation_1 = MathTex(r"A \rightarrow B: X=2Y").scale(.75).shift(UR*2 + RIGHT*.5)
         explanation_2 = MathTex(r"B \rightarrow C: X= \frac{1} {3} Y").scale(.75).next_to(explanation_1, DOWN)
 
-        self.add(
-            dot1, dot2, dot3, label_d1, label_d2, label_d3, 
-            line_x1, line_y1, label_x1, label_y1, 
-            line_x2, line_y2, label_x2, label_y2, 
-            _explanation_1, _explanation_2
-        )
-        self.play(
-            Transform(_explanation_1, explanation_1), 
-            Transform(_explanation_2, explanation_2)
-        )
-
-        # self.play(*(FadeIn(e) for e in (dot1, dot2, dot3, label_d1, label_d2, label_d3)))
-        # self.play(*(FadeIn(e) for e in (line_x1, line_y1, label_x1, label_y1)))
-        # self.play(FadeIn(_explanation_1))
-
-        # self.play(Transform(_explanation_1, explanation_1))
-        # self.wait()
-
-        # self.play(*(FadeIn(e) for e in (line_x2, line_y2, label_x2, label_y2)))
-        # self.play(FadeIn(_explanation_2))
-        # self.wait()
-        
-        # self.play(Transform(_explanation_2, explanation_2))
-        # self.wait()
-
-        # self.play(*(FadeOut(e) for e in (
+        # self.add(
         #     dot1, dot2, dot3, label_d1, label_d2, label_d3, 
-        #     line_x1, line_y1, label_x1, label_y1, _explanation_1, 
-        #     line_x2, line_y2, label_x2, label_y2, _explanation_2
-        # )))
+        #     line_x1, line_y1, label_x1, label_y1, 
+        #     line_x2, line_y2, label_x2, label_y2, 
+        #     _explanation_1, _explanation_2
+        # )
+        # self.play(
+        #     Transform(_explanation_1, explanation_1), 
+        #     Transform(_explanation_2, explanation_2)
+        # )
+        # self.wait()
 
+        self.add_mojects(dot1, dot2, dot3, label_d1, label_d2, label_d3, run_time=.5)
+        self.add_mojects(line_x1, line_y1, label_x1, label_y1, run_time=.5)
+        self.add_mojects(_explanation_1)
 
-class IndifferenceCurveIntro3(Scene):
-    """
-    Indifference Curve Introduction 3
-    
-    comparing how much of good Y would one trade 
-    for a unit of good X on each point on the indifference curve
+        self.play(Transform(_explanation_1, explanation_1))
+        self.wait()
 
-    illustraiting diminishing utility of good x (as measured by how much y to which it's equivalent)
-    """
-    def construct(self):
-        plane = Axes(**AX_CONFIG).shift(LEFT*2)
-        labels = plane.get_axis_labels(x_label="Q_x", y_label="Q_y")
-        self.add(plane, labels)
+        self.add_mojects(line_x2, line_y2, label_x2, label_y2, run_time=.5)
+        self.add_mojects(_explanation_2)
+        self.wait()
+        
+        self.play(Transform(_explanation_2, explanation_2))
+        self.wait()
 
-        ic = IndifferenceCurve(3)
-        ic_graph = ic.get_graph(plane)
-        self.add(ic_graph)
+        self.remove_mojects(
+            dot1, dot2, dot3, label_d1, label_d2, label_d3, 
+            line_x1, line_y1, label_x1, label_y1, _explanation_1, 
+            line_x2, line_y2, label_x2, label_y2, _explanation_2
+        )
+
+    def animation_4(self):
+        # comparing how much of good Y would one trade 
+          # for a unit of good X on each point on the indifference curve.
+          # (Illustraiting diminishing utility of good x, like #3)
+        # mojects change: no change
+        plane, ic, ic_graph = self.plane, self.ic, self.ic_graph
 
         dot1 = Dot(ic.get_pos(plane, x=ic.x_range[0])).add_updater(
             lambda d: d.move_to(ic.get_pos(plane, x=x_tracker.get_value()))
@@ -367,6 +385,8 @@ class IndifferenceCurveIntro3(Scene):
         dot2 = Dot(ic.get_pos(plane, x=ic.x_range[0] + 1)).add_updater(
             lambda d: d.move_to(ic.get_pos(plane, x=x_tracker.get_value() + 1))
         )
+        # self.play(FadeIn(Dot()))
+        # self.add_mojects(Dot())
 
         # dashed line showing the Qx difference between bundle dot1 and dot2 doesn't change
         line_x = DashedLine(
@@ -425,9 +445,7 @@ class IndifferenceCurveIntro3(Scene):
         qx_var.add(qx_arrow.next_to(qx_var, RIGHT))
 
         Group(qx_var, dqy_var).arrange(DOWN).shift(UR*2 + RIGHT*.5)
-        self.add(dot1, dot2)
-        self.add(line_x, label_x, line_y, label_y)
-        self.add(qx_var, dqy_var)
+        self.add_mojects(dot1, dot2, qx_var, dqy_var, line_x, label_x, line_y, label_y, animation=None)
 
         x_tracker = ValueTracker(ic.u)
         x_values = (ic.x_range[1] - 1, ic.x_range[0], ic.u)
@@ -441,13 +459,23 @@ class IndifferenceCurveIntro3(Scene):
                 )
             self.play(
                 x_tracker.animate.set_value(x), 
-                run_time=4
+                run_time=2
             )
         self.wait()
 
+        self.remove_mojects(
+            dot1, dot2, qx_var, dqy_var, 
+            line_x, label_x, line_y, label_y, 
+        )
+        self.wait()
+
+    def animation_5(self):
+        # MRS changing with Qx
+        # mojects change: no change
+        pass
 
 
-# Animation #3: showing MRS for each point on the indifference curve
+# (potentioal) Animation #6: showing MRS for each point on the indifference curve
 
 
         # Animation #?: multiple indifference curves, color showing utility (darker = higher utility)
