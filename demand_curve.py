@@ -197,20 +197,19 @@ class IndifferenceCurveIntro(Scene):
     """
     Indifference Curve Introduction
     
-    # Animation #1: dot moving along a fixed indifference curve
-    # Animation #2: dot moving with a movning indifference curve
+    Animation #1: dot moving along a fixed indifference curve
+    Animation #2: dot moving with a movning indifference curve
     """
     def construct(self):
-        # Qx-Qy plane
         plane = NumberPlane(**AX_CONFIG).shift(LEFT*2)
         labels = plane.get_axis_labels(x_label="Q_x", y_label="Q_y")
 
         # indifference curve
         ic = IndifferenceCurve(3)
         ic_graph = ic.get_graph(plane)
+        
+        self.add(plane, labels, ic_graph)
 
-        # Animation #1: dot moving along a fixed indifference curve
-        # dot moving along indifference curve
         dot = Dot(ic_graph.get_start()).add_updater(
             lambda d: d.move_to(ic.get_pos(plane, x=x_tracker.get_value()))
         )
@@ -227,8 +226,7 @@ class IndifferenceCurveIntro(Scene):
             ic.f(x_tracker.get_value())
         ))
 
-        self.add(plane, labels)
-        self.add(ic_graph, dot)
+        self.add(dot)
         self.add(u_var, qx_var, qy_var)
 
         x_tracker = ValueTracker(dot_coords[0])
@@ -240,8 +238,7 @@ class IndifferenceCurveIntro(Scene):
             )
         self.wait()
 
-
-        # Animation #2: dot moving with a movning indifference curve
+        # Animation #2: dot moving with a moving indifference curve
         # clear updaters for Animation #1
         [m.clear_updaters() for m in (dot, qx_var, qy_var, ic_graph)]
 
@@ -270,6 +267,128 @@ class IndifferenceCurveIntro(Scene):
             )
         self.wait()
 
+
+class IndifferenceCurveIntro2(Scene):
+    """
+    Indifference Curve Introduction 2
+    
+    comparing points on indifference curve, 
+    showing diminishing marginal utility for consumption of good x
+    """
+    def construct(self):
+        plane = Axes(**AX_CONFIG).shift(LEFT*2)
+        labels = plane.get_axis_labels(x_label="Q_x", y_label="Q_y")
+        self.add(plane, labels)
+
+        ic = IndifferenceCurve(3)
+        ic_graph = ic.get_graph(plane)
+        self.add(ic_graph)
+        
+        dot1 = Dot(point=ic.get_pos(plane, x=1))
+        dot2 = Dot(point=ic.get_pos(plane, x=3))
+        dot3 = Dot(point=ic.get_pos(plane, y=1))
+        label_d1 = Text("A").scale(.5).next_to(dot1, UR/2)
+        label_d2 = Text("B").scale(.5).next_to(dot2, UR/2)
+        label_d3 = Text("C").scale(.5).next_to(dot3, UR/2)
+
+        line_x1 = Arrow(ic.get_pos(plane, x=1), plane.c2p(3, 9), buff=0).set_color(GREEN)
+        line_y1 = Arrow(plane.c2p(3, 9), ic.get_pos(plane, x=3), buff=0).set_color(RED)
+        label_x1 = Text("+2X").scale(.5).next_to(line_x1, DOWN).set_color(GREEN)
+        label_y1 = Text("-6Y").scale(.5).next_to(line_y1, RIGHT).set_color(RED)
+
+        line_x2 = Arrow(ic.get_pos(plane, x=3), plane.c2p(9, 3), buff=0).set_color(GREEN)
+        line_y2 = Arrow(plane.c2p(9, 3), ic.get_pos(plane, y=1), buff=0).set_color(RED)
+        label_x2 = Text("+6X").scale(.5).next_to(line_x2, UP).set_color(GREEN)
+        label_y2 = Text("-2Y").scale(.5).next_to(line_y2, LEFT).set_color(RED)
+
+        # explanations before simplifying equation
+        _explanation_1 = MathTex(r"A \rightarrow B: 2X=6Y").scale(.75).shift(UR*2 + RIGHT*.5)
+        _explanation_2 = MathTex(r"B \rightarrow C: 6X=2Y").scale(.75).next_to(_explanation_1, DOWN)
+        # explanations after simplifying equation
+        explanation_1 = MathTex(r"A \rightarrow B: X=2Y").scale(.75).shift(UR*2 + RIGHT*.5)
+        explanation_2 = MathTex(r"B \rightarrow C: X= \frac{1} {3} Y").scale(.75).next_to(explanation_1, DOWN)
+
+        self.play(*(FadeIn(e) for e in (dot1, dot2, dot3, label_d1, label_d2, label_d3)))
+
+        self.play(*(FadeIn(e) for e in (line_x1, line_y1, label_x1, label_y1)))
+        self.play(FadeIn(_explanation_1))
+        self.play(Transform(_explanation_1, explanation_1))
+        self.wait()
+
+        self.play(*(FadeIn(e) for e in (line_x2, line_y2, label_x2, label_y2)))
+        self.play(FadeIn(_explanation_2))
+        self.wait()
+        
+        self.play(Transform(_explanation_2, explanation_2))
+        self.wait()
+
+        # self.play(*(FadeOut(e) for e in (
+        #     dot1, dot2, dot3, label_d1, label_d2, label_d3, 
+        #     line_x1, line_y1, label_x1, label_y1, _explanation_1, 
+        #     line_x2, line_y2, label_x2, label_y2, _explanation_2
+        # )))
+
+
+class IndifferenceCurveIntro3(Scene):
+    """
+    Indifference Curve Introduction 3
+    
+    comparing how much of good Y would one trade 
+    for a unit of good X on each point on the indifference curve
+    Animation #3: showing MRS for each point on the indifference curve
+    """
+    def construct(self):
+        plane = Axes(**AX_CONFIG).shift(LEFT*2)
+        labels = plane.get_axis_labels(x_label="Q_x", y_label="Q_y")
+        self.add(plane, labels)
+
+        ic = IndifferenceCurve(3)
+        ic_graph = ic.get_graph(plane)
+        self.add(ic_graph)
+
+        dot = Dot(ic_graph.get_start()).add_updater(
+            lambda d: d.move_to(ic.get_pos(plane, x=x_tracker.get_value()))
+        )
+
+        # Variables showing quantities of goods x and y, and utility
+        dot_coords = (ic.x_range[0], ic.f(ic.x_range[0]))
+        u_var = Variable(ic.u, 'U', num_decimal_places=3)
+        qx_var = Variable(dot_coords[0], "Q_x", num_decimal_places=3)
+        qy_var = Variable(dot_coords[1], 'Q_y', num_decimal_places=3)
+
+        Group(u_var, qx_var, qy_var).arrange(DOWN).shift(UR*2 + RIGHT*.5)
+        qx_var.add_updater(lambda v: v.tracker.set_value(x_tracker.get_value()))
+        qy_var.add_updater(lambda v: v.tracker.set_value(
+            ic.f(x_tracker.get_value())
+        ))
+
+        self.add(dot)
+        self.add(u_var, qx_var, qy_var)
+
+        x_tracker = ValueTracker(dot_coords[0])
+        x_values = (ic.x_range[1], ic.u)
+        for x in x_values:
+            self.play(
+                x_tracker.animate.set_value(x), 
+                run_time=2
+            )
+        self.wait()
+
+
+
+
+        # Animation #?: multiple indifference curves, color showing utility (darker = higher utility)
+        # U_MAX = 10
+        # for u in np.linspace(0.1, U_MAX, 200):
+        #     L = 30
+        #     H = 255
+        #     # hex_val = hex(int(L + (H - L)/U_MAX**.5*u**.5))[2:] # hex value for each r, g, and b
+        #     hex_val = hex(int(H - (H - L)/U_MAX**.5*u**.5))[2:] # hex value for each r, g, and b
+        #     if len(hex_val) == 1:
+        #         hex_val = "0" + hex_val
+        #     rgb_color = "#" + hex_val*3 # color in rgb hex
+        #     ic_graph = IndifferenceCurve(u).get_graph(plane, color=rgb_color)
+        #     self.add(ic_graph)
 
 
 class DerivingDemandCurve(Scene):
