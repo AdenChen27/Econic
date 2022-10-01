@@ -210,11 +210,15 @@ class IndifferenceCurveIntro(Scene):
         # set of new mobjects added/deleted to self -> 
         #   set of all mobjects added (exclude those imposed by self.init)
 
-        # self.animation_1() # +{dot, u_var} -> {dot, u_var}
-        # self.animation_2() # -{dot, u_var} -> {}
-        # self.animation_3() # no change
-        # self.animation_4() # no change
+        self.animation_1() # +{dot, u_var} -> {dot, u_var}
+        self.animation_2() # -{dot, u_var} -> {}
+        self.clean()
+        self.animation_3() # no change
+        self.clean()
+        self.animation_4() # no change
+        self.clean()
         self.animation_5() # no change
+        self.clean()
 
     def init(self):
         plane = Axes(**AX_CONFIG).shift(LEFT*2)
@@ -227,6 +231,14 @@ class IndifferenceCurveIntro(Scene):
 
         self.plane, self.ic, self.ic_graph = plane, ic, ic_graph
 
+        # mobjects introduced in self.init, and to be kept in self.clean
+        self.protected_mobjects = set((plane, ic, ic_graph, labels))
+    
+    def clean(self, animation=FadeOut):
+        for m in self.mobjects:
+            if m not in self.protected_mobjects:
+                self.remove(m)
+
     def add_mobjects(self, *args, animation=FadeIn, **kwargs):
         if animation is None:
             self.add(*args)
@@ -236,6 +248,7 @@ class IndifferenceCurveIntro(Scene):
     def remove_mobjects(self, *args, animation=FadeOut, **kwargs):
         self.play(animation(Group(*args)), **kwargs)
         self.remove(*args)
+
     
     def animation_1(self):
         # dot moving along a fixed indifference curve
