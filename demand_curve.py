@@ -197,12 +197,11 @@ class IndifferenceCurveIntro(Scene):
     
     Animation #1: dot moving along a fixed indifference curve
     Animation #2: dot moving with a moving indifference curve
-    Animation #3: comparing bundles on indifference curve, 
-        (Illustraiting diminishing utility of good x 
-          (as measured by how much y to which it's equivalent))
+    Animation #3: comparing bundles on indifference curve
+        (illustraiting diminishing marginal rate of substitution)
     Animation #4: comparing how much of good Y would one trade 
         for a unit of good X on each point on the indifference curve.
-        (Illustraiting diminishing utility of good x, like #3)
+        (illustraiting diminishing marginal rate of substitution)
     Animation #5: deriving MRS formulas; MRS changing with Qx
     """
     def construct(self):
@@ -210,17 +209,19 @@ class IndifferenceCurveIntro(Scene):
         # set of new mobjects added/deleted to self -> 
         #   set of all mobjects added (exclude those imposed by self.init)
 
-        self.animation_1() # +{dot, u_var} -> {dot, u_var}
-        self.animation_2() # -{dot, u_var} -> {}
-        self.clean()
+        # self.animation_1() # +{dot, u_var} -> {dot, u_var}
+        # self.animation_2() # -{dot, u_var} -> {}
+        # self.clean()
         self.animation_3() # no change
-        self.clean()
-        self.animation_4() # no change
-        self.clean()
-        self.animation_5() # no change
-        self.clean()
+        # self.clean()
+        # self.animation_4() # no change
+        # self.clean()
+        # self.animation_5() # no change
+        # self.clean()
 
     def init(self):
+        self.FADE_ANIMATION_OFF = True
+
         plane = Axes(**AX_CONFIG).shift(LEFT*2)
         labels = plane.get_axis_labels(x_label="x", y_label="y")
 
@@ -234,19 +235,24 @@ class IndifferenceCurveIntro(Scene):
         # mobjects introduced in self.init, and to be kept in self.clean
         self.protected_mobjects = set((plane, ic, ic_graph, labels))
     
-    def clean(self, animation=FadeOut):
+    def clean(self):
         for m in self.mobjects:
             if m not in self.protected_mobjects:
                 self.remove(m)
 
     def add_mobjects(self, *args, animation=FadeIn, **kwargs):
+        if self.FADE_ANIMATION_OFF and animation == FadeIn:
+            animation = None
         if animation is None:
             self.add(*args)
         else:
             self.play(animation(Group(*args)), **kwargs)
 
     def remove_mobjects(self, *args, animation=FadeOut, **kwargs):
-        self.play(animation(Group(*args)), **kwargs)
+        if self.FADE_ANIMATION_OFF and animation == FadeOut:
+            animation = None
+        if animation is not None:
+            self.play(animation(Group(*args)), **kwargs)
         self.remove(*args)
 
     
@@ -312,9 +318,8 @@ class IndifferenceCurveIntro(Scene):
         self.remove_mobjects(dot, u_var)
 
     def animation_3(self):
-        # comparing bundles on indifference curve, 
-        #   (Illustraiting diminishing utility of good x 
-        #     (as measured by how much y to which it's equivalent))
+        # comparing bundles on indifference curve
+        #   (illustraiting diminishing marginal rate of substitution)
         # mobjects change: no change
         plane, ic, ic_graph = self.plane, self.ic, self.ic_graph
 
@@ -341,45 +346,35 @@ class IndifferenceCurveIntro(Scene):
         _explanation_1 = MathTex(r"A \rightarrow B: 2X=6Y").scale(.75).shift(UR*2 + RIGHT*.5)
         _explanation_2 = MathTex(r"B \rightarrow C: 6X=2Y").scale(.75).next_to(_explanation_1, DOWN)
         # explanations after simplifying equation
-        explanation_1 = MathTex(r"A \rightarrow B: X=2Y").scale(.75).shift(UR*2 + RIGHT*.5)
-        explanation_2 = MathTex(r"B \rightarrow C: X= \frac{1} {3} Y").scale(.75).next_to(explanation_1, DOWN)
-
-        # self.add(
-        #     dot1, dot2, dot3, label_d1, label_d2, label_d3, 
-        #     line_x1, line_y1, label_x1, label_y1, 
-        #     line_x2, line_y2, label_x2, label_y2, 
-        #     _explanation_1, _explanation_2
-        # )
-        # self.play(
-        #     Transform(_explanation_1, explanation_1), 
-        #     Transform(_explanation_2, explanation_2)
-        # )
-        # self.wait()
+        explanation_1 = MathTex(r"A \rightarrow B: X=3Y").scale(.75).shift(UR*2 + RIGHT*.5)
+        explanation_2 = MathTex(r"B \rightarrow C: X=\frac{1} {3}Y").scale(.75).next_to(explanation_1, DOWN)
 
         self.add_mobjects(dot1, dot2, dot3, label_d1, label_d2, label_d3, run_time=.5)
         self.add_mobjects(line_x1, line_y1, label_x1, label_y1, run_time=.5)
-        self.add_mobjects(_explanation_1)
+        
+        self.add_mobjects(explanation_1, explanation_2)# for still image
+        # self.add_mobjects(_explanation_1)
 
-        self.play(Transform(_explanation_1, explanation_1))
-        self.wait()
+        # self.play(Transform(_explanation_1, explanation_1))
+        # self.wait()
 
         self.add_mobjects(line_x2, line_y2, label_x2, label_y2, run_time=.5)
-        self.add_mobjects(_explanation_2)
-        self.wait()
+        # self.add_mobjects(_explanation_2)
+        # self.wait()
         
-        self.play(Transform(_explanation_2, explanation_2))
-        self.wait()
+        # self.play(Transform(_explanation_2, explanation_2))
+        # self.wait()
 
-        self.remove_mobjects(
-            dot1, dot2, dot3, label_d1, label_d2, label_d3, 
-            line_x1, line_y1, label_x1, label_y1, _explanation_1, 
-            line_x2, line_y2, label_x2, label_y2, _explanation_2
-        )
+        # self.remove_mobjects(
+        #     dot1, dot2, dot3, label_d1, label_d2, label_d3, 
+        #     line_x1, line_y1, label_x1, label_y1, _explanation_1, 
+        #     line_x2, line_y2, label_x2, label_y2, _explanation_2
+        # )
 
     def animation_4(self):
         # comparing how much of good Y would one trade 
-          # for a unit of good X on each point on the indifference curve.
-          # (Illustraiting diminishing utility of good x, like #3)
+        #   for a unit of good X on each point on the indifference curve.
+        #   (illustraiting diminishing marginal rate of substitution)
         # mobjects change: no change
         plane, ic, ic_graph = self.plane, self.ic, self.ic_graph
         

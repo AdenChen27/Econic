@@ -23,11 +23,11 @@ Animation #2: dot moving with a moving indifference curve
 
 ![Indifference Curve Intro-2](out/IndifferenceCurveIntro-2.gif)
 
-Animation #3: comparing bundles on indifference curve (Illustraiting diminishing utility of good x (as measured by how much y to which it's equivalent))
+Animation #3: comparing bundles on indifference curve (Illustraiting diminishing marginal rate of substitution)
 
 ![Indifference Curve Intro-3](out/IndifferenceCurveIntro-3.gif)
 
-Animation #4: comparing how much of good Y would one trade for a unit of good X on each point on the indifference curve. (Illustraiting diminishing utility of good x, like #3)
+Animation #4: comparing how much of good Y would one trade for a unit of good X on each point on the indifference curve. (Illustraiting diminishing marginal rate of substitution)
 
 ![Indifference Curve Intro-4](out/IndifferenceCurveIntro-4.gif)
 
