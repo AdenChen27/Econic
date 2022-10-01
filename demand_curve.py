@@ -103,8 +103,9 @@ class BudgetConstraintIntro(Scene):
     """
     Budget Constraint Introduction
 
-    showing how budget constraint change in response to the change in price of good x (px)
-    dot with fixed Qy on budget constraint, moving with the budget constraint line
+    Animation #1: budget constraint changing in response to price change of good x (Px)
+    Animation #2: consumption bundle with fixed consumption 
+        of good y (Qy=2) changing as budget changes
     (showing that Qx increases when Px decreases; lower price = more goods)
     """
     def construct(self):
@@ -122,7 +123,7 @@ class BudgetConstraintIntro(Scene):
             lambda l: l.become(BudgetConstraint(p_tracker.get_value(), PY, BUDGET).get_graph(plane))
         )
 
-        # Animation #1
+        # Animation #1: budget constraint changing in response to price change of good x (Px)
         dot = Dot(bc_graph.get_start()).add_updater(
             lambda d: d.move_to(bc.get_pos(plane, x=x_tracker.get_value()))
         )
@@ -139,8 +140,8 @@ class BudgetConstraintIntro(Scene):
             )
         self.wait()
 
-        # Animation #2
-        # a dot on the budget constraint line with Qy = 2
+        # Animation #2: consumption bundle with fixed consumption 
+        #   of good y (Qy=2) changing as budget changes
         init_dot_pos = bc.get_pos(plane, y=2)
         dot.clear_updaters()
         dot.add_updater(lambda d: d.move_to(
@@ -185,10 +186,7 @@ class BudgetConstraintIntro(Scene):
                     Rotate(q_arrow, angle=PI)
                 )
 
-            self.play(
-                p_tracker.animate.set_value(p), 
-                run_time=2
-            )
+            self.play(p_tracker.animate.set_value(p), run_time=2)
 
         self.wait()
 
@@ -200,12 +198,12 @@ class IndifferenceCurveIntro(Scene):
     Animation #1: dot moving along a fixed indifference curve
     Animation #2: dot moving with a moving indifference curve
     Animation #3: comparing bundles on indifference curve, 
-      (Illustraiting diminishing utility of good x 
-        (as measured by how much y to which it's equivalent))
+        (Illustraiting diminishing utility of good x 
+          (as measured by how much y to which it's equivalent))
     Animation #4: comparing how much of good Y would one trade 
-      for a unit of good X on each point on the indifference curve.
-      (Illustraiting diminishing utility of good x, like #3)
-    Animation #5: MRS changing with Qx
+        for a unit of good X on each point on the indifference curve.
+        (Illustraiting diminishing utility of good x, like #3)
+    Animation #5: deriving MRS formulas; MRS changing with Qx
     """
     def construct(self):
         self.init()
@@ -215,12 +213,12 @@ class IndifferenceCurveIntro(Scene):
         # self.animation_1() # +{dot, u_var} -> {dot, u_var}
         # self.animation_2() # -{dot, u_var} -> {}
         # self.animation_3() # no change
-        self.animation_4() # no change
-        # self.animation_5() # no change
+        # self.animation_4() # no change
+        self.animation_5() # no change
 
     def init(self):
         plane = Axes(**AX_CONFIG).shift(LEFT*2)
-        labels = plane.get_axis_labels(x_label="Q_x", y_label="Q_y")
+        labels = plane.get_axis_labels(x_label="x", y_label="y")
 
         # indifference curve
         ic = IndifferenceCurve(3)
@@ -233,10 +231,10 @@ class IndifferenceCurveIntro(Scene):
         if animation is None:
             self.add(*args)
         else:
-            self.play(*(animation(e) for e in args), **kwargs)
+            self.play(animation(Group(*args)), **kwargs)
 
     def remove_mobjects(self, *args, animation=FadeOut, **kwargs):
-        self.play(*(animation(e) for e in args), **kwargs)
+        self.play(animation(Group(*args)), **kwargs)
         self.remove(*args)
     
     def animation_1(self):
@@ -265,10 +263,7 @@ class IndifferenceCurveIntro(Scene):
         x_tracker = ValueTracker(dot_coords[0])
         x_values = (ic.x_range[1], ic.u)
         for x in x_values:
-            self.play(
-                x_tracker.animate.set_value(x), 
-                run_time=2
-            )
+            self.play(x_tracker.animate.set_value(x), run_time=2)
         self.wait()
 
         # clean up
@@ -299,10 +294,7 @@ class IndifferenceCurveIntro(Scene):
         u_tracker = ValueTracker(ic.u)
         u_values = [7, 1, 3]
         for u in u_values:
-            self.play(
-                u_tracker.animate.set_value(u), 
-                run_time=2
-            )
+            self.play(u_tracker.animate.set_value(u), run_time=2)
         self.wait()
         self.remove_mobjects(dot, u_var)
 
@@ -446,10 +438,7 @@ class IndifferenceCurveIntro(Scene):
                     Rotate(dqy_arrow, angle=PI), 
                     Rotate(qx_arrow, angle=PI)
                 )
-            self.play(
-                x_tracker.animate.set_value(x), 
-                run_time=2
-            )
+            self.play(x_tracker.animate.set_value(x), run_time=2)
         self.wait()
 
         self.remove_mobjects(
@@ -459,9 +448,84 @@ class IndifferenceCurveIntro(Scene):
         self.wait()
 
     def animation_5(self):
-        # MRS changing with Qx
+        # Animation #5: deriving MRS formulas; MRS changing with Qx
         # mobjects change: no change
-        pass
+        plane, ic, ic_graph = self.plane, self.ic, self.ic_graph
+
+        # tracking x position of dot, starting from mid point of indifference curve
+        x_tracker = ValueTracker(ic.u)
+
+        DU = lambda x: -ic.u**2/x**2 # derivative of utility function
+
+        def get_start_and_end_of_tangent_line(pos=None, du=None):
+            if pos is None:
+                pos = ic.get_coords(x=x_tracker.get_value())
+            if du is None: # derivative of utility function
+                du = DU
+
+            x0, y0 = pos
+            # y - y0 = k(x - x0)
+            # => y = k*x - k*x0 + y0
+            # => y = k*x + b
+            # (b = -k*x0 + y0; y in [0, AX_HEIGHT])
+            k = du(pos[0])
+            b = -k*x0 + y0
+            f = lambda x: k*x +b # function of tanget line
+
+            # start & end pos: (xl, yl), (xr, yr)
+            # avoid zero division & keep within square with a=2, and center at (x0, y0)
+            xl = max(0.1, x0 - 1, (AX_HEIGHT - b)/k, (y0 + 1 - b)/k)
+            xr = min(AX_WIDTH, x0 + 1, -b/k, (y0 - 1 - b)/k)
+            return plane.c2p(xl, f(xl)), plane.c2p(xr, f(xr))
+        
+        dot = Dot().add_updater(lambda d: d.move_to(
+            ic.get_pos(plane, x=x_tracker.get_value())
+        ))
+        line = Line().set_color(YELLOW).add_updater(lambda l: l.put_start_and_end_on(
+            *get_start_and_end_of_tangent_line()
+        ))
+
+        # showing how to derive MRS=dy/dx=MU_y/MU_x
+        pre_mrs_formula = MathTex(r"MRS=").shift(UR*2)
+        suf_mrs_formula_1 = MathTex(r"\frac{dy}{dx}")
+        suf_mrs_formula_2 = MathTex(r"\frac{\frac{1}{dx}}{\frac{1}{dy}}")
+        suf_mrs_formula_3 = MathTex(r"\frac{\frac{du}{dx}}{\frac{du}{dy}}")
+        suf_mrs_formula_4 = MathTex(r"\frac{MU_x}{MU_y}")
+        
+        mrs_formula_sufs = (suf_mrs_formula_1, suf_mrs_formula_2, suf_mrs_formula_3, suf_mrs_formula_4)
+        [suf.next_to(pre_mrs_formula, RIGHT) for suf in mrs_formula_sufs]
+
+        # Variable showing MRS
+        mrs_var = Variable(None, r"MRS=\frac{dy}{dx}=\frac{MU_x}{MU_y}")
+        mrs_var.shift(UR*2).add_updater(
+            lambda v: v.tracker.set_value(DU(x_tracker.get_value()))
+        )
+        mrs_var.update()
+
+        # deriving formulas for MRS
+        self.add_mobjects(pre_mrs_formula, suf_mrs_formula_1)
+        for i in range(len(mrs_formula_sufs) - 1):
+            self.play(ReplacementTransform(mrs_formula_sufs[i], mrs_formula_sufs[i + 1]))
+            self.remove(mrs_formula_sufs[i])
+        self.wait()
+        
+        # transition from deriving formulas to showing MRS Variable
+        self.play(
+            FadeOut(Group(pre_mrs_formula, mrs_formula_sufs[-1])), 
+            FadeIn(mrs_var)
+        )
+        self.remove(pre_mrs_formula, mrs_formula_sufs[-1])
+        self.add_mobjects(dot, line)
+
+        # animation
+        x_values = (ic.x_range[1] - 1, ic.x_range[0], ic.u)
+        for x in x_values:
+            self.play(x_tracker.animate.set_value(x), run_time=2)
+        self.wait()
+
+        self.remove_mobjects(dot, line, mrs_var)
+        self.wait()
+        self.remove(x_tracker)
 
 
 # (potentioal) Animation #6: showing MRS for each point on the indifference curve
@@ -485,9 +549,9 @@ class DerivingDemandCurve(Scene):
     """
     Deriving Demand Curve
 
-    showing how budget constraint and highest indifference curve 
-    respond to changes in price of good x (px) and plotting 
-    the derived demand curve on a Price-Quantity plane 
+    budget constraint and highest indifference curve changing in
+    response to changes in price of good x (px); 
+    plot derived demand curve on a Price-Quantity plane 
     """
     def construct(self):
         # Qx-Qy plane, for budget constraints and indifference curves
