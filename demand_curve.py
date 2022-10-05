@@ -506,7 +506,7 @@ class IndifferenceCurveIntro(Scene):
         # Variable showing MRS
         mrs_var = Variable(None, r"MRS=\frac{dy}{dx}=\frac{MU_x}{MU_y}")
         mrs_var.shift(UR*2).add_updater(
-            lambda v: v.tracker.set_value(DU(x_tracker.get_value()))
+            lambda v: v.tracker.set_value(-DU(x_tracker.get_value()))
         )
         mrs_var.update()
 
