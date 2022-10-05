@@ -557,8 +557,7 @@ class IndifferenceCurveIntro(Scene):
 
         bc = BudgetConstraint(PX, PY, BUDGET)
         self.add(
-            bc.get_graph(plane), 
-            bc.get_ic_graph(plane), 
+            bc.get_all_graphs(plane), 
             *_ic_graphs
         )
 
