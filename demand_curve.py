@@ -88,8 +88,8 @@ class BudgetConstraint:
     def get_ic(self, plane):
         return IndifferenceCurve(self.u)
 
-    def get_ic_graph(self, plane):
-        return self.get_ic(plane).get_graph(plane, color=BLUE)
+    def get_ic_graph(self, plane, **kwargs):
+        return self.get_ic(plane).get_graph(plane, color=BLUE, **kwargs)
 
     def get_all_graphs(self, plane):
         bc_graph = self.get_graph(plane)
@@ -546,9 +546,6 @@ class IndifferenceCurveIntro(Scene):
         # mobjects change: no change
         plane, ic, ic_graph = self.plane, self.ic, self.ic_graph
 
-        bc_graph = BudgetConstraint(PX, PY, BUDGET).get_graph(plane)
-        self.add(bc_graph)
-
         U_MAX = 10
         _ic_graphs = []
         for u in np.linspace(0.5, U_MAX, 10):
@@ -558,8 +555,12 @@ class IndifferenceCurveIntro(Scene):
                 color=color, 
             ).set_stroke(width=2))
 
-        self.add(*_ic_graphs)
-        self.remove_mobjects(bc_graph)
+        bc = BudgetConstraint(PX, PY, BUDGET)
+        self.add(
+            bc.get_graph(plane), 
+            bc.get_ic_graph(plane), 
+            *_ic_graphs
+        )
 
 
 # (potentioal) Animation #7: showing MRS for each point on the indifference curve
