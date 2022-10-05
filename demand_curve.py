@@ -203,6 +203,7 @@ class IndifferenceCurveIntro(Scene):
         for a unit of good X on each point on the indifference curve.
         (illustraiting diminishing marginal rate of substitution)
     Animation #5: deriving MRS formulas; MRS changing with Qx
+    Animation #6: showing corresponding budget constraint
     """
     def construct(self):
         self.init()
@@ -216,7 +217,9 @@ class IndifferenceCurveIntro(Scene):
         # self.clean()
         # self.animation_4() # no change
         # self.clean()
-        self.animation_5() # no change
+        # self.animation_5() # no change
+        # self.clean()
+        self.animation_6() # no change
         # self.clean()
 
     def init(self):
@@ -506,7 +509,7 @@ class IndifferenceCurveIntro(Scene):
         # Variable showing MRS
         mrs_var = Variable(None, r"MRS=\frac{dy}{dx}=\frac{MU_x}{MU_y}")
         mrs_var.shift(UR*2).add_updater(
-            lambda v: v.tracker.set_value(-DU(x_tracker.get_value()))
+            lambda v: v.tracker.set_value(DU(x_tracker.get_value()))
         )
         mrs_var.update()
 
@@ -538,8 +541,28 @@ class IndifferenceCurveIntro(Scene):
         self.wait()
         self.remove(x_tracker)
 
+    def animation_6(self):
+        # Animation #6: showing corresponding budget constraint
+        # mobjects change: no change
+        plane, ic, ic_graph = self.plane, self.ic, self.ic_graph
 
-# (potentioal) Animation #6: showing MRS for each point on the indifference curve
+        bc_graph = BudgetConstraint(PX, PY, BUDGET).get_graph(plane)
+        self.add(bc_graph)
+
+        U_MAX = 10
+        _ic_graphs = []
+        for u in np.linspace(0.5, U_MAX, 10):
+            color = GREEN_D if u < ic.u else RED_D
+            _ic_graphs.append(IndifferenceCurve(u).get_graph(
+                plane, 
+                color=color, 
+            ).set_stroke(width=2))
+
+        self.add(*_ic_graphs)
+        self.remove_mobjects(bc_graph)
+
+
+# (potentioal) Animation #7: showing MRS for each point on the indifference curve
 
 
         # Animation #?: multiple indifference curves, color showing utility (darker = higher utility)

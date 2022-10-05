@@ -35,6 +35,10 @@ Animation #5: deriving MRS formulas; MRS changing with Qx
 
 ![Indifference Curve Intro-5](out/IndifferenceCurveIntro-5.gif)
 
+Animation #6: showing corresponding budget constraint
+
+![Indifference Curve Intro-6](out/IndifferenceCurveIntro-6.png)
+
 
 ## Deriving the Demand Curve
 
