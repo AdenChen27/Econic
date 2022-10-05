@@ -217,9 +217,9 @@ class IndifferenceCurveIntro(Scene):
         # self.clean()
         # self.animation_4() # no change
         # self.clean()
-        # self.animation_5() # no change
+        self.animation_5() # no change
         # self.clean()
-        self.animation_6() # no change
+        # self.animation_6() # no change
         # self.clean()
 
     def init(self):
@@ -449,7 +449,7 @@ class IndifferenceCurveIntro(Scene):
                     Rotate(dqy_arrow, angle=PI), 
                     Rotate(qx_arrow, angle=PI)
                 )
-            self.play(x_tracker.animate.set_value(x), run_time=2)
+            self.play(x_tracker.animate.set_value(x), run_time=1.5)
         self.wait()
 
         self.remove_mobjects(
@@ -518,7 +518,7 @@ class IndifferenceCurveIntro(Scene):
         for i in range(len(mrs_formula_sufs) - 1):
             self.play(
                 ReplacementTransform(mrs_formula_sufs[i], mrs_formula_sufs[i + 1]), 
-                run_time=1.5
+                run_time=1
             )
             self.remove(mrs_formula_sufs[i])
         self.wait()
@@ -538,7 +538,7 @@ class IndifferenceCurveIntro(Scene):
         self.wait()
 
         self.remove_mobjects(dot, line, mrs_var)
-        self.wait()
+        # self.wait()
         self.remove(x_tracker)
 
     def animation_6(self):
