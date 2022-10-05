@@ -4,11 +4,11 @@ AX_HEIGHT = 10
 AX_WIDTH = 10
 AX_SCALE = 2
 AX_CONFIG = {
-    "x_range":[0, AX_WIDTH, 1], 
-    "y_range":[0, AX_HEIGHT, 1], 
-    "x_length":AX_WIDTH/AX_SCALE, 
-    "y_length":AX_HEIGHT/AX_SCALE, 
-    "tips":False,
+    "x_range": [0, AX_WIDTH, 1], 
+    "y_range": [0, AX_HEIGHT, 1], 
+    "x_length": AX_WIDTH/AX_SCALE, 
+    "y_length": AX_HEIGHT/AX_SCALE, 
+    "tips": False,
 }
 
 PX = 2 # price for good x and y
@@ -212,11 +212,11 @@ class IndifferenceCurveIntro(Scene):
         # self.animation_1() # +{dot, u_var} -> {dot, u_var}
         # self.animation_2() # -{dot, u_var} -> {}
         # self.clean()
-        self.animation_3() # no change
+        # self.animation_3() # no change
         # self.clean()
         # self.animation_4() # no change
         # self.clean()
-        # self.animation_5() # no change
+        self.animation_5() # no change
         # self.clean()
 
     def init(self):
@@ -513,7 +513,10 @@ class IndifferenceCurveIntro(Scene):
         # deriving formulas for MRS
         self.add_mobjects(pre_mrs_formula, suf_mrs_formula_1)
         for i in range(len(mrs_formula_sufs) - 1):
-            self.play(ReplacementTransform(mrs_formula_sufs[i], mrs_formula_sufs[i + 1]))
+            self.play(
+                ReplacementTransform(mrs_formula_sufs[i], mrs_formula_sufs[i + 1]), 
+                run_time=1.5
+            )
             self.remove(mrs_formula_sufs[i])
         self.wait()
         
