@@ -25,15 +25,18 @@ Animation #2: dot moving with a moving indifference curve
 
 Animation #3: comparing bundles on indifference curve (Illustraiting diminishing marginal rate of substitution)
 
-![Indifference Curve Intro-3](out/IndifferenceCurveIntro-3.gif)
+![Indifference Curve Intro-3](out/IndifferenceCurveIntro-3.png)
 
 Animation #4: comparing how much of good Y would one trade for a unit of good X on each point on the indifference curve. (Illustraiting diminishing marginal rate of substitution)
+
+![Indifference Curve Intro-4](out/IndifferenceCurveIntro-4.mp4)
 
 <video width="640" height="360" controls>
   <source src="out/IndifferenceCurveIntro-4.mp4" type="video/mp4">
 </video>
 
 Animation #5: deriving MRS formulas; MRS changing with Qx
+
 
 ![Indifference Curve Intro-5](out/IndifferenceCurveIntro-5.mp4)
 
