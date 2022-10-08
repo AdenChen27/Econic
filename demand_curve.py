@@ -217,9 +217,9 @@ class IndifferenceCurveIntro(Scene):
         # self.clean()
         # self.animation_4() # no change
         # self.clean()
-        self.animation_5() # no change
+        # self.animation_5() # no change
         # self.clean()
-        # self.animation_6() # no change
+        self.animation_6() # no change
         # self.clean()
 
     def init(self):
@@ -546,9 +546,9 @@ class IndifferenceCurveIntro(Scene):
         # mobjects change: no change
         plane, ic, ic_graph = self.plane, self.ic, self.ic_graph
 
-        U_MAX = 10
+        U_MAX = 5
         _ic_graphs = []
-        for u in np.linspace(0.5, U_MAX, 10):
+        for u in np.linspace(2, U_MAX, 2):
             color = GREEN_D if u < ic.u else RED_D
             _ic_graphs.append(IndifferenceCurve(u).get_graph(
                 plane, 
