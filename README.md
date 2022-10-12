@@ -8,4 +8,4 @@ Preview by topics:
 
 [01: Budget Constraint and Indifference Curve](out/01.md)
 
-[02: Expected Utility Theory and Prospect Theory](out/o2.md)
+[02: Expected Utility Theory and Prospect Theory](out/02.md)
