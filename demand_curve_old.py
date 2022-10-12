@@ -1,8 +1,13 @@
+"""
+Utility func: u = x^p + y
+"""
+
 from manim import *
 
 S_HEIGHT = 8
 S_WIDTH = 14
 P = .82
+
 
 
 class IndifferenceCurve:
