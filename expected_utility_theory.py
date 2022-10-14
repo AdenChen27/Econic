@@ -53,7 +53,7 @@ class UtilityIntro(Scene):
     """
     Utilty Introduction
 
-    Animation #0: showing u(w)
+    # Animation #0: showing u(w)
     Animation #1: diminishing marginal utility of wealth
         showing utility change for [w, w+1] (w = w_tracker)
     """
