@@ -1,4 +1,4 @@
-# Economics related animations for teenage students
+Economics related animations used in blog of EconLab, a WeChat Official Account posting economics/behavioral economics blogs targeted at teenage students.
 
 Made with [ManimCE](https://docs.manim.community/en/stable/index.html#)
 
