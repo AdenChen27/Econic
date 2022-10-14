@@ -29,7 +29,7 @@ class IndifferenceCurve:
         # return plane.plot(self.f, x_range=self.x_range, use_smoothing=False, **config)
 
     def get_coords(self, x=None, y=None):
-        # return coordinates of a dot on the budget constraint line
+        # return coordinates of a dot on the indifference curve
         # given the x or y position of the dot
         if x is not None and y is not None:
             return (x, y)
@@ -40,7 +40,7 @@ class IndifferenceCurve:
         return None
     
     def get_pos(self, plane, x=None, y=None):
-        # return position of a dot on the budget constraint line relative to given plane
+        # return position of a dot on the indifference curve relative to given plane
         # given the x or y position of the dot
         return plane.c2p(*self.get_coords(x, y))
 
