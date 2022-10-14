@@ -3,9 +3,16 @@
 Made with [ManimCE](https://docs.manim.community/en/stable/index.html#)
 
 
+### Decision Making 01: Budget Constraint and Indifference Curve
 
-Preview by topics:
+[Animations (on Github)](out/01.md)
 
-[01: Budget Constraint and Indifference Curve](out/01.md)
+[Blog (on Wechat Official Account)](https://mp.weixin.qq.com/s/oM8e8rOnwr6uNmmqIS8oig)
 
-[02: Expected Utility Theory and Prospect Theory](out/02.md)
+### Decision Making 02: Expected Utility Theory and Prospect Theory \[in progress\]
+
+[Animations](out/02.md)
+
+
+
+
