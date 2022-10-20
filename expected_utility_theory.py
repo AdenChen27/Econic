@@ -1,4 +1,5 @@
 from manim import *
+from demand_curve import IndifferenceCurve
 
 AX_HEIGHT = 10
 AX_WIDTH = 10
@@ -58,22 +59,52 @@ class UtilityIntro(Scene):
         showing utility change for [w, w+1] (w = w_tracker)
     """
     def construct(self):
+        self.init()
+        self.animation_1()
+        self.animation_2()
+
+    def clean(self):
+        for m in self.mobjects:
+            if m not in self.protected_mobjects:
+                self.remove(m)
+
+    def add_mobjects(self, *args, animation=FadeIn, **kwargs):
+        if self.FADE_ANIMATION_OFF and animation == FadeIn:
+            animation = None
+        if animation is None:
+            self.add(*args)
+        else:
+            self.play(animation(Group(*args)), **kwargs)
+
+    def remove_mobjects(self, *args, animation=FadeOut, **kwargs):
+        if self.FADE_ANIMATION_OFF and animation == FadeOut:
+            animation = None
+        if animation is not None:
+            self.play(animation(Group(*args)), **kwargs)
+        self.remove(*args)
+
+    def init(self):
+        self.FADE_ANIMATION_OFF = False
+
         # W-U plane for utility-wealth function
         plane = Axes(**AX_CONFIG_1st_QUADRANT).shift(LEFT*2)
         labels = plane.get_axis_labels(x_label="W", y_label="U")
-        p2c, c2p = plane.p2c, plane.c2p
 
         # utility function over wealth u(w)
         u_w = UtilityOverWealth(plane)
-        ufunc = u_w.get_graph(plane)
+        u_graph = u_w.get_graph(plane)
 
-        
         # Animation #0: showing u(w)
         self.add(plane, labels)
-        self.add(ufunc)
+        self.add(u_graph)
+        self.plane, self.u_w, self.u_graph = plane, u_w, u_graph
 
+    def animation_1(self):
         # Animation #1: diminishing marginal utility of wealth
         #   showing utility change for [w, w+1] (w = w_tracker)
+        plane, u_w, u_graph = self.plane, self.u_w, self.u_graph
+        p2c, c2p = plane.p2c, plane.c2p
+
         w_tracker = ValueTracker(0.1)
 
         def get_line_to_x_axis_pos(w):
@@ -120,6 +151,77 @@ class UtilityIntro(Scene):
         for w in w_values:
             self.play(w_tracker.animate.set_value(w), run_time=2)
 
+    def animation_2(self):
+        
+        pass
+
+class NeoClassicalEndowmentEffect(Scene):
+    # Neoclassical explanation for endowment effect (Hanemann, 1991)
+    # essentially DMU of wealth
+    # WTP < WTA
+    def construct(self):
+        # Wealth-Good plane
+        plane = Axes(**AX_CONFIG_1st_QUADRANT).shift(LEFT*2)
+        labels = plane.get_axis_labels(x_label="x", y_label="W")
+        self.add(plane, labels)
+
+        ic = IndifferenceCurve(3)
+        ic2 = IndifferenceCurve(4) # with an extra unit of x
+        ic_graph = ic.get_graph(plane)
+        ic_graph2 = ic2.get_graph(plane)
+
+        # D
+        # A B
+        #   C
+        a_pos = ic.get_pos(plane, x=2)
+        b_pos = ic2.get_pos(plane, y=ic.f(2))
+        c_pos = ic.get_pos(plane, x=ic2.get_x(ic.f(2)))
+        d_pos = ic2.get_pos(plane, x=2)
+
+        label_a = Text("A").scale(.5).next_to(a_pos, DL/2)
+        label_b = Text("B").scale(.5).next_to(b_pos, UR/2)
+        label_c = Text("A'").scale(.5).next_to(c_pos, DL/2)
+        label_d = Text("B'").scale(.5).next_to(d_pos, UR/2)
+        # label_d2 = Text("B").scale(.5).next_to(dot2, UR/2)
+        # label_d3 = Text("C").scale(.5).next_to(dot3, UR/2)
+
+        dot_a = Dot(a_pos)
+        dot_b = Dot(b_pos) # same wealth, one more unit of good x
+        dot_c = Dot(a_pos, color=YELLOW) # move from A to C
+        dot_d = Dot(b_pos, color=YELLOW) # move from B to D
+
+        self.add(dot_a, dot_b, label_a, label_b)
+
+        self.wait()
+        self.play(Create(ic_graph), Create(ic_graph2))
+
+        # A -> B (C -> B)
+        arrow_cb = Arrow(c_pos, b_pos, buff=0.1)
+        arrow_ab = Arrow(a_pos, b_pos, buff=0.1)
+        self.play(Create(arrow_ab))
+        self.add(dot_c)
+        self.play(
+            dot_c.animate.move_to(c_pos), 
+            ReplacementTransform(arrow_ab, arrow_cb), 
+            FadeIn(label_c)
+        )
+
+        # B -> A (B -> D)
+        arrow_da = Arrow(d_pos, a_pos, buff=0.1)
+        arrow_ba = Arrow(b_pos, a_pos, buff=0.1)
+        self.play(Create(arrow_ba))
+        self.add(dot_d)
+        self.play(
+            dot_d.animate.move_to(d_pos), 
+            ReplacementTransform(arrow_ba, arrow_da), 
+            FadeIn(label_d)
+        )
+
+        self.wait()
+
+
+
+
 
 
 class ProspectTheoryUtility(Scene):
@@ -131,13 +233,14 @@ class ProspectTheoryUtility(Scene):
         # wealth - reference point
         labels = plane.get_axis_labels(x_label=r"c-r", y_label="U")
 
-        ufunc = plane.plot(lambda x: x**.7 if x>=0 else -2*(-x)**.7)
-        # ufunc = plane.plot(lambda x: x)
+        u_graph = plane.plot(lambda x: x**.7 if x>=0 else -2*(-x)**.7)
+        # u_graph = plane.plot(lambda x: x)
         
         self.add(plane, labels)
-        self.add(ufunc)
+        self.add(u_graph)
 
 
 
 # markowitz utility function
+
 

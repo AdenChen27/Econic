@@ -9,7 +9,7 @@ Made with [ManimCE](https://docs.manim.community/en/stable/index.html#)
 
 [Blog (on Wechat Official Account)](https://mp.weixin.qq.com/s/oM8e8rOnwr6uNmmqIS8oig)
 
-### Decision Making 02: Expected Utility Theory and Prospect Theory \[in progress\]
+### Decision Making 02: Expected Utility Theory and Prospect Theory; Loss Aversion, Risk Aversion, & Endowment Effect \[in progress\]
 
 [Animations](out/02.md)
 
