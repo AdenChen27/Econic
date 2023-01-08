@@ -163,7 +163,7 @@ class UtilityIntro(Scene):
         p2c, c2p = plane.p2c, plane.c2p
         # dots: 
         # L: bet lost; M: current state; R: bet won
-        # M2: mid point of L and R - expected utility
+        # M2: mid point of L and R -- expected utility
         Lx = 1
         Rx = 7
         Mx = (Lx + Rx)/2
@@ -182,21 +182,25 @@ class UtilityIntro(Scene):
         plane, u_w, u_graph = self.plane, self.u_w, self.u_graph
         p2c, c2p = plane.p2c, plane.c2p
         # dots: 
-        # L: bet lost; M: current state; R: bet won
-        # M2: mid point of L and R - expected utility
+        # L: bet lost; I: initial state; R: bet won
+        # M2: mid point of L and R -- expected utility
         Lx = 1
         Rx = 7 + 3/10
-        Mx = Lx + (Rx - Lx)/2.1
+        Ix = 4
+        Mx = (Lx + Rx)/2
+        print(Ix, Mx)
 
         L = Dot(u_w.get_pos(x=Lx))
-        M = Dot(u_w.get_pos(x=Mx), color=GREEN)
+        I = Dot(u_w.get_pos(x=Ix), color=GREEN)
         R = Dot(u_w.get_pos(x=Rx))
-        M2 = Dot(c2p(Mx, u_w.f(Lx) + (u_w.f(Rx) - u_w.f(Lx))/2.1), color=YELLOW)
+        M2 = Dot(c2p(Mx, (u_w.f(Lx) + u_w.f(Rx))/2), color=YELLOW)
 
         self.add(DashedLine(u_w.get_pos(x=Lx), u_w.get_pos(x=Rx)))
-        self.add(L, M, R, M2)
+        self.add(L, I, R, M2)
         self.add(Text("-100").scale(.5).next_to(L, UP/2))
         self.add(Text("+110").scale(.5).next_to(R, UP/2))
+        self.add(Text("W = +0").scale(.4).set_color(GREEN).next_to(I, UP/2))
+        self.add(Text("W = +5").scale(.4).set_color(YELLOW).next_to(M2, RIGHT/2))
 
 
 class NeoClassicalEndowmentEffect(Scene):
