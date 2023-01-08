@@ -191,12 +191,12 @@ class UtilityIntro(Scene):
         L = Dot(u_w.get_pos(x=Lx))
         M = Dot(u_w.get_pos(x=Mx), color=GREEN)
         R = Dot(u_w.get_pos(x=Rx))
-        M2 = Dot(c2p(Mx, (u_w.f(Lx) + u_w.f(Rx))/2), color=YELLOW)
+        M2 = Dot(c2p(Mx, u_w.f(Lx) + (u_w.f(Rx) - u_w.f(Lx))/2.1), color=YELLOW)
 
         self.add(DashedLine(u_w.get_pos(x=Lx), u_w.get_pos(x=Rx)))
         self.add(L, M, R, M2)
         self.add(Text("-100").scale(.5).next_to(L, UP/2))
-        self.add(Text("+100").scale(.5).next_to(R, UP/2))
+        self.add(Text("+110").scale(.5).next_to(R, UP/2))
 
 
 class NeoClassicalEndowmentEffect(Scene):
