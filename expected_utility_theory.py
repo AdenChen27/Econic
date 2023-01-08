@@ -26,9 +26,9 @@ AX_CONFIG = {
 class UtilityOverWealth:
     # utility function over wealth
     def __init__(self, plane):
-        self.P = .7
+        self.P = .5
         self.plane = plane
-        self.f = lambda x: x**self.P
+        self.f = lambda x: 2*x**self.P
 
     def get_graph(self, plane, **config):
         return plane.plot(self.f, use_smoothing=False)
@@ -54,14 +54,17 @@ class UtilityIntro(Scene):
     """
     Utilty Introduction
 
-    # Animation #0: showing u(w)
+    Animation #0: showing u(w)
     Animation #1: diminishing marginal utility of wealth
         showing utility change for [w, w+1] (w = w_tracker)
+    Animation #2: showing expected utility for bet: 50% +100; 50% -100
+    Animation #3: showing expected utility for bet: 50% +110; 50% -100 [looks exactly same as #2]
     """
     def construct(self):
-        self.init()
-        self.animation_1()
-        self.animation_2()
+        self.init() # +{u_graph} -> {u_graph}
+        # self.animation_1() # no change
+        # self.animation_2() # no change
+        self.animation_3() # no change
 
     def clean(self):
         for m in self.mobjects:
@@ -98,6 +101,7 @@ class UtilityIntro(Scene):
         self.add(plane, labels)
         self.add(u_graph)
         self.plane, self.u_w, self.u_graph = plane, u_w, u_graph
+        self.protected_mobjects = [self.plane, self.u_graph]
 
     def animation_1(self):
         # Animation #1: diminishing marginal utility of wealth
@@ -143,7 +147,6 @@ class UtilityIntro(Scene):
         brace_bottom = Line(ORIGIN, RIGHT/5).add_updater(lambda l: l.move_to(brace_stem, DOWN))
         brace = Group(brace_stem, brace_top, brace_bottom).set_color(YELLOW)
 
-        
 
         self.add(to_x_axis_line_0, to_x_axis_line_1, h_line, brace)
 
@@ -151,9 +154,50 @@ class UtilityIntro(Scene):
         for w in w_values:
             self.play(w_tracker.animate.set_value(w), run_time=2)
 
+        self.remove_mobjects(w_tracker, to_x_axis_line_0, to_x_axis_line_1, h_line, brace)
+        # self.clean()
+
     def animation_2(self):
-        
-        pass
+        # Animation #2: showing expected utility for bet: 50% +100; 50% -100
+        plane, u_w, u_graph = self.plane, self.u_w, self.u_graph
+        p2c, c2p = plane.p2c, plane.c2p
+        # dots: 
+        # L: bet lost; M: current state; R: bet won
+        # M2: mid point of L and R - expected utility
+        Lx = 1
+        Rx = 7
+        Mx = (Lx + Rx)/2
+        L = Dot(u_w.get_pos(x=Lx))
+        M = Dot(u_w.get_pos(x=Mx), color=GREEN)
+        R = Dot(u_w.get_pos(x=Rx))
+        M2 = Dot(c2p(Mx, (u_w.f(Lx) + u_w.f(Rx))/2), color=YELLOW)
+
+        self.add(DashedLine(u_w.get_pos(x=Lx), u_w.get_pos(x=Rx)))
+        self.add(L, M, R, M2)
+        self.add(Text("-100").scale(.5).next_to(L, UP/2))
+        self.add(Text("+100").scale(.5).next_to(R, UP/2))
+
+    def animation_3(self):
+        # Animation #3: showing expected utility for bet: 50% +110; 50% -100
+        plane, u_w, u_graph = self.plane, self.u_w, self.u_graph
+        p2c, c2p = plane.p2c, plane.c2p
+        # dots: 
+        # L: bet lost; M: current state; R: bet won
+        # M2: mid point of L and R - expected utility
+        Lx = 1
+        Rx = 7 + 3/10
+        Mx = Lx + (Rx - Lx)/2.1
+
+        L = Dot(u_w.get_pos(x=Lx))
+        M = Dot(u_w.get_pos(x=Mx), color=GREEN)
+        R = Dot(u_w.get_pos(x=Rx))
+        M2 = Dot(c2p(Mx, (u_w.f(Lx) + u_w.f(Rx))/2), color=YELLOW)
+
+        self.add(DashedLine(u_w.get_pos(x=Lx), u_w.get_pos(x=Rx)))
+        self.add(L, M, R, M2)
+        self.add(Text("-100").scale(.5).next_to(L, UP/2))
+        self.add(Text("+100").scale(.5).next_to(R, UP/2))
+
 
 class NeoClassicalEndowmentEffect(Scene):
     # Neoclassical explanation for endowment effect (Hanemann, 1991)

@@ -213,8 +213,8 @@ class IndifferenceCurveIntro(Scene):
         # set of new mobjects added/deleted to self -> 
         #   set of all mobjects added (exclude those imposed by self.init)
 
-        # self.animation_1() # +{dot, u_var} -> {dot, u_var}
-        # self.animation_2() # -{dot, u_var} -> {}
+        self.animation_1() # +{dot, u_var} -> {dot, u_var}
+        self.animation_2() # -{dot, u_var} -> {}
         # self.clean()
         # self.animation_3() # no change
         # self.clean()
@@ -222,7 +222,7 @@ class IndifferenceCurveIntro(Scene):
         # self.clean()
         # self.animation_5() # no change
         # self.clean()
-        self.animation_6() # no change
+        # self.animation_6() # no change
         # self.clean()
 
     def init(self):
@@ -631,6 +631,8 @@ class DerivingDemandCurve(Scene):
         self.demand_curve.add(Line(
             plane2.c2p(*self.last_dot_pos), plane2.c2p(*self.last_dot_pos)
         ))
+
+        self.demand_curve.add(Line(plane2.c2p(*self.last_dot_pos), plane2.c2p(*self.last_dot_pos)))
 
         def demand_dot(): # (Q, P)
             px = p_tracker.get_value()
