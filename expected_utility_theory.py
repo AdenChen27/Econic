@@ -228,9 +228,12 @@ class UtilityIntro(Scene):
             c2p(x_750, 5)
         ))
         self.add(I, C1, C2, C3)
-        self.add(Text("W = 0").scale(.5).next_to(I, DOWN/2))
-        self.add(Text("W = -750").scale(.5).next_to(C1, DR/2))
-        self.add(Text("W = -1000").scale(.5).next_to(C2, DR/2).shift(LEFT/3))
+        self.add(Text("W = 0").scale(.4).next_to(I, DOWN/2))
+        self.add(Text("W = -750").scale(.4).next_to(C1, DR/2))
+        self.add(Text("W = -1000").scale(.4).next_to(C2, DR/2).shift(LEFT/3))
+
+        self.add(Text("C", color=GREEN).scale(.4).next_to(C1, UL/2))
+        self.add(Text("D", color=YELLOW).scale(.4).next_to(C3, DL/2))
 
 
 
