@@ -58,13 +58,15 @@ class UtilityIntro(Scene):
     Animation #1: diminishing marginal utility of wealth
         showing utility change for [w, w+1] (w = w_tracker)
     Animation #2: showing expected utility for bet: 50% +100; 50% -100
-    Animation #3: showing expected utility for bet: 50% +110; 50% -100 [looks exactly same as #2]
+    Animation #3: showing expected utility for bet: 50% +110; 50% -100
+    Animation #4: showing expected utility for choices: 100% -750 or 75% -1000
     """
     def construct(self):
         self.init() # +{u_graph} -> {u_graph}
         # self.animation_1() # no change
         # self.animation_2() # no change
-        self.animation_3() # no change
+        # self.animation_3() # no change
+        self.animation_4() # no change
 
     def clean(self):
         for m in self.mobjects:
@@ -188,7 +190,6 @@ class UtilityIntro(Scene):
         Rx = 7 + 3/10
         Ix = 4
         Mx = (Lx + Rx)/2
-        print(Ix, Mx)
 
         L = Dot(u_w.get_pos(x=Lx))
         I = Dot(u_w.get_pos(x=Ix), color=GREEN)
@@ -201,6 +202,37 @@ class UtilityIntro(Scene):
         self.add(Text("+110").scale(.5).next_to(R, UP/2))
         self.add(Text("W = +0").scale(.4).set_color(GREEN).next_to(I, UP/2))
         self.add(Text("W = +5").scale(.4).set_color(YELLOW).next_to(M2, RIGHT/2))
+
+    def animation_4(self):
+        # Animation #4: showing expected utility for choices: 100% -750 or 75% -1000
+        plane, u_w, u_graph = self.plane, self.u_w, self.u_graph
+        p2c, c2p = plane.p2c, plane.c2p
+        # dots: 
+        # I: initial state
+        # C1: choice 1 (100% -750)
+        # C2: choice 2 (75% -1000) and lost (-1000)
+        # C3: choice 2 (75% -1000) expected state
+        Ix = 10
+        x_1000 = 1
+        x_750 = x_1000 + (Ix - x_1000)/4
+        
+
+        I = Dot(u_w.get_pos(x=Ix))
+        C1 = Dot(u_w.get_pos(x=x_750), color=GREEN)
+        C2 = Dot(u_w.get_pos(x=x_1000))
+        C3 = Dot(c2p(x_750, u_w.f(x_1000) + (u_w.f(Ix) - u_w.f(x_1000))/4), color=YELLOW)
+
+        self.add(DashedLine(u_w.get_pos(x=Ix), u_w.get_pos(x=x_1000)))
+        self.add(DashedLine(
+            c2p(x_750, 2), 
+            c2p(x_750, 5)
+        ))
+        self.add(I, C1, C2, C3)
+        self.add(Text("W = 0").scale(.5).next_to(I, DOWN/2))
+        self.add(Text("W = -750").scale(.5).next_to(C1, DR/2))
+        self.add(Text("W = -1000").scale(.5).next_to(C2, DR/2).shift(LEFT/3))
+
+
 
 
 class NeoClassicalEndowmentEffect(Scene):
