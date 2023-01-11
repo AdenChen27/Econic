@@ -10,7 +10,7 @@ AX_CONFIG_1st_QUADRANT = {
     "x_length": AX_WIDTH/AX_SCALE, 
     "y_length": AX_HEIGHT/AX_SCALE, 
     "tips": False,
-    # "axis_config": {"include_numbers": True}
+    "axis_config": {"include_ticks": False}
 }
 
 AX_CONFIG = {
