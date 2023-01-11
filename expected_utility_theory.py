@@ -66,7 +66,7 @@ class UtilityIntro(Scene):
         # self.animation_1() # no change
         # self.animation_2() # no change
         # self.animation_3() # no change
-        self.animation_4() # no change
+        # self.animation_4() # no change
 
     def clean(self):
         for m in self.mobjects:
@@ -179,6 +179,8 @@ class UtilityIntro(Scene):
         self.add(Text("-100").scale(.5).next_to(L, UP/2))
         self.add(Text("+100").scale(.5).next_to(R, UP/2))
 
+        self.clean()
+
     def animation_3(self):
         # Animation #3: showing expected utility for bet: 50% +110; 50% -100
         plane, u_w, u_graph = self.plane, self.u_w, self.u_graph
@@ -202,6 +204,8 @@ class UtilityIntro(Scene):
         self.add(Text("+110").scale(.5).next_to(R, UP/2))
         self.add(Text("W = +0").scale(.4).set_color(GREEN).next_to(I, UP/2))
         self.add(Text("W = +5").scale(.4).set_color(YELLOW).next_to(M2, RIGHT/2))
+
+        self.clean()
 
     def animation_4(self):
         # Animation #4: showing expected utility for choices: 100% -750 or 75% -1000
@@ -235,7 +239,7 @@ class UtilityIntro(Scene):
         self.add(Text("C", color=GREEN).scale(.4).next_to(C1, UL/2))
         self.add(Text("D", color=YELLOW).scale(.4).next_to(C3, DL/2))
 
-
+        self.clean()
 
 
 class NeoClassicalEndowmentEffect(Scene):
@@ -263,8 +267,8 @@ class NeoClassicalEndowmentEffect(Scene):
 
         label_a = Text("A").scale(.5).next_to(a_pos, DL/2)
         label_b = Text("B").scale(.5).next_to(b_pos, UR/2)
-        label_c = Text("A'").scale(.5).next_to(c_pos, DL/2)
-        label_d = Text("B'").scale(.5).next_to(d_pos, UR/2)
+        label_c = Text("A'", color=YELLOW).scale(.5).next_to(c_pos, DL/2)
+        label_d = Text("B'", color=YELLOW).scale(.5).next_to(d_pos, UR/2)
         # label_d2 = Text("B").scale(.5).next_to(dot2, UR/2)
         # label_d3 = Text("C").scale(.5).next_to(dot3, UR/2)
 
@@ -274,14 +278,12 @@ class NeoClassicalEndowmentEffect(Scene):
         dot_d = Dot(b_pos, color=YELLOW) # move from B to D
 
         self.add(dot_a, dot_b, label_a, label_b)
-
-        self.wait()
-        self.play(Create(ic_graph), Create(ic_graph2))
+        self.add(ic_graph, ic_graph2)
 
         # A -> B (C -> B)
-        arrow_cb = Arrow(c_pos, b_pos, buff=0.1)
-        arrow_ab = Arrow(a_pos, b_pos, buff=0.1)
-        self.play(Create(arrow_ab))
+        arrow_cb = Arrow(c_pos, b_pos, buff=0.1, color=BLUE)
+        arrow_ab = Arrow(a_pos, b_pos, buff=0.1, color=BLUE)
+        self.play(FadeIn(arrow_ab))
         self.add(dot_c)
         self.play(
             dot_c.animate.move_to(c_pos), 
@@ -290,9 +292,9 @@ class NeoClassicalEndowmentEffect(Scene):
         )
 
         # B -> A (B -> D)
-        arrow_da = Arrow(d_pos, a_pos, buff=0.1)
-        arrow_ba = Arrow(b_pos, a_pos, buff=0.1)
-        self.play(Create(arrow_ba))
+        arrow_da = Arrow(d_pos, a_pos, buff=0.1, color=BLUE)
+        arrow_ba = Arrow(b_pos, a_pos, buff=0.1, color=BLUE)
+        self.play(FadeIn(arrow_ba))
         self.add(dot_d)
         self.play(
             dot_d.animate.move_to(d_pos), 

@@ -1,18 +1,14 @@
-Economics related animations used in blog of EconLab, a WeChat Official Account posting economics/behavioral economics blogs targeted at teenage students.
+Economics related animations
 
 Made with [ManimCE](https://docs.manim.community/en/stable/index.html#)
 
 
-### Decision Making 01: Budget Constraint and Indifference Curve
 
-[Animations (on Github)](out/01.md)
+### Animations:
 
-[Blog (on Wechat Official Account)](https://mp.weixin.qq.com/s/oM8e8rOnwr6uNmmqIS8oig)
+[Decision Making 01: Budget Constraint and Indifference Curve](out/01.md)
 
-### Decision Making 02: Expected Utility Theory and Prospect Theory; Loss Aversion, Risk Aversion, & Endowment Effect \[in progress\]
+[Decision Making 02: Expected Utility Theory](out/02.md)
 
-[Animations](out/02.md)
-
-
-
+[Decision Making 03: Prospect Theory \[in progress\]](out/o2.md)
 
