@@ -10,5 +10,5 @@ Made with [ManimCE](https://docs.manim.community/en/stable/index.html#)
 
 [Decision Making 02: Expected Utility Theory](out/02.md)
 
-[Decision Making 03: Prospect Theory \[in progress\]](out/o2.md)
+[Decision Making 03: Prospect Theory \[in progress\]](out/03.md)
 
