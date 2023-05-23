@@ -99,10 +99,12 @@ class DemandCurveIntro(Scene):
 
 
     # Animation #1: moving along the demand curve
+    # Animation #2: demand curve shifting
     """
     def construct(self):
         self.init() # +{dc_graph, sc_graph} -> {u_graph}
-        self.animation_1()
+        # self.animation_1() # no change
+        self.animation_2() # no change
 
     def clean(self):
         for m in self.mobjects:
@@ -140,13 +142,13 @@ class DemandCurveIntro(Scene):
 
         self.add(dc_graph, dc_label)
 
-        self.plane, self.dc, self.dc_graph = plane, dc, dc_graph
+        self.plane, self.dc, self.dc_graph, self.dc_label = plane, dc, dc_graph, dc_label
         # self.sc, self.sc_graph = sc, sc_graph
         self.protected_mobjects = [self.plane, self.dc_graph, plane_labels, dc_label]
 
     def animation_1(self):
         # Animation #1: moving along the demand curve
-        plane, dc, dc_graph = self.plane, self.dc, self.dc_graph
+        plane, dc, dc_graph, dc_label = self.plane, self.dc, self.dc_graph, self.dc_label
         x_tracker = ValueTracker(3.5)
         
         line_to_x_axis = DashedLine().add_updater(lambda l: l.put_start_and_end_on(
@@ -163,6 +165,15 @@ class DemandCurveIntro(Scene):
 
         for x in [6.5, 3.5]:
             self.play(x_tracker.animate.set_value(x), run_time=2)
+
+        self.clean()
+
+    def animation_2(self):
+        # Animation #2: demand curve shifting
+        plane, dc, dc_graph, dc_label = self.plane, self.dc, self.dc_graph, self.dc_label
+        self.play(dc_graph.animate.shift(RIGHT), dc_label.animate.shift(RIGHT))
+        self.play(dc_graph.animate.shift(LEFT*2), dc_label.animate.shift(LEFT*2))
+        self.play(dc_graph.animate.shift(RIGHT), dc_label.animate.shift(RIGHT))
 
         
 
