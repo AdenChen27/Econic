@@ -12,3 +12,4 @@ Made with [ManimCE](https://docs.manim.community/en/stable/index.html#)
 
 [Decision Making 03: Prospect Theory](out/03.md)
 
+[Suplpy & Demand Curves](out/sd_curves.md)
